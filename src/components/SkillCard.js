@@ -1,5 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 import { Calendar, Clock, Target } from 'lucide-react';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
@@ -15,12 +15,7 @@ export default function SkillCard({ skill }) {
   const isOverdue = skill.target_date && new Date(skill.target_date) < new Date();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
-      transition={{ duration: 0.2 }}
-    >
+    <div className="animate-slide-up hover:-translate-y-1 transition-transform duration-200">
       <Link href={`/skills/${skill.id}`}>
         <Card className="h-full hover:border-gray-600 transition-colors cursor-pointer">
           <div className="flex justify-between items-start mb-3">
@@ -56,6 +51,6 @@ export default function SkillCard({ skill }) {
           </div>
         </Card>
       </Link>
-    </motion.div>
+    </div>
   );
 }

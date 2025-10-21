@@ -1,5 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export default function ProgressBar({ 
@@ -21,11 +21,9 @@ export default function ProgressBar({
     <div className={cn('w-full', className)} {...props}>
       <div className="flex items-center gap-2">
         <div className="flex-1 bg-gray-700 rounded-full h-2 overflow-hidden">
-          <motion.div
-            className={cn('h-full rounded-full', getProgressColor(clampedValue))}
-            initial={{ width: 0 }}
-            animate={{ width: `${clampedValue}%` }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
+          <div
+            className={cn('h-full rounded-full transition-all duration-500 ease-out', getProgressColor(clampedValue))}
+            style={{ width: `${clampedValue}%` }}
           />
         </div>
         {showPercentage && (

@@ -1,5 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 import SkillCard from './SkillCard';
 
 export default function SkillList({ skills, loading }) {
@@ -29,11 +29,8 @@ export default function SkillList({ skills, loading }) {
 
   if (skills.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-center py-12"
-      >
+      <div className="text-center py-12 animate-fade-in">
+        {/* Empty state content */}
         <div className="text-gray-400 mb-4">
           <svg className="mx-auto h-12 w-12 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -41,20 +38,15 @@ export default function SkillList({ skills, loading }) {
         </div>
         <h3 className="text-lg font-medium text-white mb-2">No skills yet</h3>
         <p className="text-gray-400 mb-6">Start tracking your learning journey by adding your first skill.</p>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ staggerChildren: 0.1 }}
-    >
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
       {skills.map((skill) => (
         <SkillCard key={skill.id} skill={skill} />
       ))}
-    </motion.div>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = {
@@ -24,13 +24,12 @@ export default function Button({
   ...props 
 }) {
   return (
-    <motion.button
-      whileHover={disabled ? {} : { scale: 1.02 }}
-      whileTap={disabled ? {} : { scale: 0.98 }}
+    <button
       className={cn(
         'inline-flex items-center justify-center rounded-lg font-medium transition-colors',
         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900',
         'disabled:opacity-50 disabled:cursor-not-allowed',
+        'hover:scale-105 active:scale-95 transition-transform',
         buttonVariants[variant],
         sizeVariants[size],
         className
@@ -39,6 +38,6 @@ export default function Button({
       {...props}
     >
       {children}
-    </motion.button>
+    </button>
   );
 }
