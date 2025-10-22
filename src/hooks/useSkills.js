@@ -9,10 +9,11 @@ export function useSkills() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Mock data for development (remove when Supabase is connected)
-  const mockSkills = [
+  // Mock data only for demo mode (when not authenticated)
+  const mockSkills = !isAuthenticated ? [
     {
-      id: '1',
+      id: 'demo-1',
+      goal_id: 'demo-1',
       title: 'React Hooks',
       description: 'Learning advanced React hooks patterns and custom hooks',
       status: 'in_progress',
@@ -21,30 +22,8 @@ export function useSkills() {
       created_at: '2024-10-01T00:00:00Z',
       updated_at: '2024-10-15T00:00:00Z',
       last_reviewed_at: '2024-10-15T00:00:00Z'
-    },
-    {
-      id: '2',
-      title: 'Node.js Performance',
-      description: 'Understanding Node.js performance optimization techniques',
-      status: 'not_started',
-      target_date: '2024-11-30',
-      notes: '',
-      created_at: '2024-10-05T00:00:00Z',
-      updated_at: '2024-10-05T00:00:00Z',
-      last_reviewed_at: '2024-10-05T00:00:00Z'
-    },
-    {
-      id: '3',
-      title: 'TypeScript Advanced Types',
-      description: 'Mastering conditional types, mapped types, and template literals',
-      status: 'done',
-      target_date: '2024-10-20',
-      notes: 'Completed the official TypeScript handbook',
-      created_at: '2024-09-15T00:00:00Z',
-      updated_at: '2024-10-20T00:00:00Z',
-      last_reviewed_at: '2024-10-20T00:00:00Z'
     }
-  ];
+  ] : [];
 
   useEffect(() => {
     fetchSkills();
@@ -54,37 +33,43 @@ export function useSkills() {
     try {
       setLoading(true);
       
-      // If not configured or not authenticated, use mock data
-      if (!isConfigured || (!isAuthenticated && isConfigured)) {
-        console.log('Using mock data - not authenticated or configured');
+      // If not configured, use mock data
+      if (!isConfigured) {
+        console.log('Using mock skills data - Supabase not configured');
         setSkills(mockSkills);
         setLoading(false);
         return;
       }
+
+      // If not authenticated, return empty array for real mode
+      if (!isAuthenticated) {
+        console.log('Not authenticated - showing empty skills');
+        setSkills([]);
+        setLoading(false);
+        return;
+      }
       
-      // Try to fetch from Supabase for authenticated users
+      // Fetch from Supabase for authenticated users
       if (supabase && user) {
-        try {
-          const { data, error } = await supabase
-            .from('skills')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false });
-          
-          if (error) throw error;
-          setSkills(data || []);
-        } catch (supabaseError) {
-          console.log('Supabase error, using mock data:', supabaseError);
-          setSkills(mockSkills);
+        const { data, error } = await supabase
+          .from('skills')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('order_in_roadmap', { ascending: true });
+        
+        if (error) {
+          console.error('Supabase error:', error);
+          setError(error.message);
+          setSkills([]);
+          return;
         }
-      } else {
-        console.log('Supabase not configured, using mock data');
-        setSkills(mockSkills);
+        
+        setSkills(data || []);
       }
     } catch (error) {
       console.error('Error fetching skills:', error);
       setError(error.message);
-      setSkills(mockSkills); // Use mock data as fallback
+      setSkills([]);
     } finally {
       setLoading(false);
     }
@@ -92,117 +77,87 @@ export function useSkills() {
 
   const createSkill = async (skillData = {}) => {
     try {
-      const newSkill = {
-        id: Date.now().toString(), // Temporary ID for mock
-        user_id: user?.id || 'demo-user',
-        title: skillData.title || 'New Skill',
-        description: skillData.description || '',
-        status: 'not_started',
-        target_date: skillData.target_date || null,
-        notes: '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        last_reviewed_at: new Date().toISOString(),
-      };
-
-      // Only try Supabase if configured and user is authenticated
-      if (supabase && user && isAuthenticated) {
-        try {
-          const { data, error } = await supabase
-            .from('skills')
-            .insert([{
-              user_id: user.id,
-              title: skillData.title || 'New Skill',
-              description: skillData.description || '',
-              status: 'not_started',
-              target_date: skillData.target_date || null,
-              notes: '',
-            }])
-            .select();
-
-          if (error) throw error;
-          setSkills(prev => [data[0], ...prev]);
-          return data[0];
-        } catch (supabaseError) {
-          console.log('Supabase error on create, using local state:', supabaseError);
-          setSkills(prev => [newSkill, ...prev]);
-          return newSkill;
-        }
-      } else {
-        // Fallback to local state update (demo mode)
-        setSkills(prev => [newSkill, ...prev]);
-        return newSkill;
+      if (!isConfigured || !isAuthenticated || !user) {
+        throw new Error('Must be authenticated to create skills');
       }
+
+      const { data, error } = await supabase
+        .from('skills')
+        .insert([{
+          user_id: user.id,
+          goal_id: skillData.goal_id || null,
+          title: skillData.title || 'New Skill',
+          description: skillData.description || '',
+          status: 'not_started',
+          target_date: skillData.target_date || null,
+          estimated_duration_days: skillData.estimated_duration_days || null,
+          order_in_roadmap: skillData.order_in_roadmap || 0,
+          notes: '',
+        }])
+        .select();
+
+      if (error) throw error;
+      
+      setSkills(prev => [...prev, data[0]]);
+      return data[0];
     } catch (error) {
       console.error('Error creating skill:', error);
       setError(error.message);
+      throw error;
     }
   };
 
   const updateSkill = async (id, updates) => {
     try {
+      if (!isConfigured || !isAuthenticated || !user) {
+        throw new Error('Must be authenticated to update skills');
+      }
+
       const updatedData = {
         ...updates,
         updated_at: new Date().toISOString(),
         last_reviewed_at: new Date().toISOString(),
       };
 
-      // Only try Supabase if configured and user is authenticated
-      if (supabase && user && isAuthenticated) {
-        try {
-          const { data, error } = await supabase
-            .from('skills')
-            .update(updatedData)
-            .eq('id', id)
-            .eq('user_id', user.id) // Ensure user can only update their own skills
-            .select();
+      const { data, error } = await supabase
+        .from('skills')
+        .update(updatedData)
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .select();
 
-          if (error) throw error;
-          setSkills(prev => prev.map(skill => 
-            skill.id === id ? data[0] : skill
-          ));
-          return data[0];
-        } catch (supabaseError) {
-          console.log('Supabase error on update, using local state:', supabaseError);
-          setSkills(prev => prev.map(skill => 
-            skill.id === id ? { ...skill, ...updatedData } : skill
-          ));
-          return { id, ...updatedData };
-        }
-      } else {
-        // Fallback to local state update (demo mode)
-        setSkills(prev => prev.map(skill => 
-          skill.id === id ? { ...skill, ...updatedData } : skill
-        ));
-        return { id, ...updatedData };
-      }
+      if (error) throw error;
+      
+      setSkills(prev => prev.map(skill => 
+        skill.id === id ? data[0] : skill
+      ));
+      return data[0];
     } catch (error) {
       console.error('Error updating skill:', error);
       setError(error.message);
+      throw error;
     }
   };
 
   const deleteSkill = async (id) => {
     try {
-      // Only try Supabase if configured and user is authenticated
-      if (supabase && user && isAuthenticated) {
-        try {
-          const { error } = await supabase
-            .from('skills')
-            .delete()
-            .eq('id', id)
-            .eq('user_id', user.id); // Ensure user can only delete their own skills
-
-          if (error) throw error;
-        } catch (supabaseError) {
-          console.log('Supabase error on delete, continuing with local deletion:', supabaseError);
-        }
+      if (!isConfigured || !isAuthenticated || !user) {
+        throw new Error('Must be authenticated to delete skills');
       }
+
+      const { error } = await supabase
+        .from('skills')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
       
       setSkills(prev => prev.filter(skill => skill.id !== id));
     } catch (error) {
       console.error('Error deleting skill:', error);
       setError(error.message);
+      throw error;
     }
   };
 

@@ -1,3 +1,6 @@
+-- Create tables from scratch
+-- Run this if you don't have any tables yet
+
 -- Goals table for tracking learning objectives
 CREATE TABLE IF NOT EXISTS goals (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -12,7 +15,7 @@ CREATE TABLE IF NOT EXISTS goals (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Updated Skills table with goal relationship
+-- Skills table with goal relationship
 CREATE TABLE IF NOT EXISTS skills (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -33,41 +36,37 @@ CREATE TABLE IF NOT EXISTS skills (
 ALTER TABLE goals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
 
--- Create policies for Goals
+-- Drop existing policies if they exist, then create new ones
 DROP POLICY IF EXISTS "Users can view their own goals" ON goals;
+DROP POLICY IF EXISTS "Users can insert their own goals" ON goals;
+DROP POLICY IF EXISTS "Users can update their own goals" ON goals;
+DROP POLICY IF EXISTS "Users can delete their own goals" ON goals;
+
 CREATE POLICY "Users can view their own goals" ON goals
   FOR SELECT USING (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Users can insert their own goals" ON goals;
 CREATE POLICY "Users can insert their own goals" ON goals
   FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Users can update their own goals" ON goals;
 CREATE POLICY "Users can update their own goals" ON goals
   FOR UPDATE USING (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Users can delete their own goals" ON goals;
 CREATE POLICY "Users can delete their own goals" ON goals
   FOR DELETE USING (auth.uid() = user_id);
 
--- Create policies for Skills
+-- Skills policies
 DROP POLICY IF EXISTS "Users can view their own skills" ON skills;
+DROP POLICY IF EXISTS "Users can insert their own skills" ON skills;
+DROP POLICY IF EXISTS "Users can update their own skills" ON skills;
+DROP POLICY IF EXISTS "Users can delete their own skills" ON skills;
+
 CREATE POLICY "Users can view their own skills" ON skills
   FOR SELECT USING (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Users can insert their own skills" ON skills;
 CREATE POLICY "Users can insert their own skills" ON skills
   FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Users can update their own skills" ON skills;
 CREATE POLICY "Users can update their own skills" ON skills
   FOR UPDATE USING (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Users can delete their own skills" ON skills;
 CREATE POLICY "Users can delete their own skills" ON skills
   FOR DELETE USING (auth.uid() = user_id);
 
--- Create updated_at trigger
+-- Create trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -76,19 +75,21 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Create triggers
 DROP TRIGGER IF EXISTS update_goals_updated_at ON goals;
+DROP TRIGGER IF EXISTS update_skills_updated_at ON skills;
+
 CREATE TRIGGER update_goals_updated_at 
   BEFORE UPDATE ON goals 
   FOR EACH ROW 
   EXECUTE FUNCTION update_updated_at_column();
 
-DROP TRIGGER IF EXISTS update_skills_updated_at ON skills;
 CREATE TRIGGER update_skills_updated_at 
   BEFORE UPDATE ON skills 
   FOR EACH ROW 
   EXECUTE FUNCTION update_updated_at_column();
 
--- Create indexes for better performance
+-- Create indexes
 CREATE INDEX IF NOT EXISTS goals_user_id_idx ON goals(user_id);
 CREATE INDEX IF NOT EXISTS goals_created_at_idx ON goals(created_at DESC);
 CREATE INDEX IF NOT EXISTS skills_user_id_idx ON skills(user_id);
