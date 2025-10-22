@@ -1,8 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/hooks/useAuth';
 
 export function useSkills() {
+  const { user, isAuthenticated, isConfigured } = useAuth();
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,18 +48,27 @@ export function useSkills() {
 
   useEffect(() => {
     fetchSkills();
-  }, []);
+  }, [user, isAuthenticated, isConfigured]);
 
   const fetchSkills = async () => {
     try {
       setLoading(true);
       
-      // Try to fetch from Supabase first
-      if (supabase) {
+      // If not configured or not authenticated, use mock data
+      if (!isConfigured || (!isAuthenticated && isConfigured)) {
+        console.log('Using mock data - not authenticated or configured');
+        setSkills(mockSkills);
+        setLoading(false);
+        return;
+      }
+      
+      // Try to fetch from Supabase for authenticated users
+      if (supabase && user) {
         try {
           const { data, error } = await supabase
             .from('skills')
             .select('*')
+            .eq('user_id', user.id)
             .order('created_at', { ascending: false });
           
           if (error) throw error;
@@ -83,6 +94,7 @@ export function useSkills() {
     try {
       const newSkill = {
         id: Date.now().toString(), // Temporary ID for mock
+        user_id: user?.id || 'demo-user',
         title: skillData.title || 'New Skill',
         description: skillData.description || '',
         status: 'not_started',
@@ -93,11 +105,19 @@ export function useSkills() {
         last_reviewed_at: new Date().toISOString(),
       };
 
-      if (supabase) {
+      // Only try Supabase if configured and user is authenticated
+      if (supabase && user && isAuthenticated) {
         try {
           const { data, error } = await supabase
             .from('skills')
-            .insert([newSkill])
+            .insert([{
+              user_id: user.id,
+              title: skillData.title || 'New Skill',
+              description: skillData.description || '',
+              status: 'not_started',
+              target_date: skillData.target_date || null,
+              notes: '',
+            }])
             .select();
 
           if (error) throw error;
@@ -109,7 +129,7 @@ export function useSkills() {
           return newSkill;
         }
       } else {
-        // Fallback to local state update
+        // Fallback to local state update (demo mode)
         setSkills(prev => [newSkill, ...prev]);
         return newSkill;
       }
@@ -127,12 +147,14 @@ export function useSkills() {
         last_reviewed_at: new Date().toISOString(),
       };
 
-      if (supabase) {
+      // Only try Supabase if configured and user is authenticated
+      if (supabase && user && isAuthenticated) {
         try {
           const { data, error } = await supabase
             .from('skills')
             .update(updatedData)
             .eq('id', id)
+            .eq('user_id', user.id) // Ensure user can only update their own skills
             .select();
 
           if (error) throw error;
@@ -148,7 +170,7 @@ export function useSkills() {
           return { id, ...updatedData };
         }
       } else {
-        // Fallback to local state update
+        // Fallback to local state update (demo mode)
         setSkills(prev => prev.map(skill => 
           skill.id === id ? { ...skill, ...updatedData } : skill
         ));
@@ -162,12 +184,14 @@ export function useSkills() {
 
   const deleteSkill = async (id) => {
     try {
-      if (supabase) {
+      // Only try Supabase if configured and user is authenticated
+      if (supabase && user && isAuthenticated) {
         try {
           const { error } = await supabase
             .from('skills')
             .delete()
-            .eq('id', id);
+            .eq('id', id)
+            .eq('user_id', user.id); // Ensure user can only delete their own skills
 
           if (error) throw error;
         } catch (supabaseError) {

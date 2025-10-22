@@ -6,6 +6,8 @@ import SearchBar from '@/components/SearchBar';
 import StatusFilter from '@/components/StatusFilter';
 import { Plus } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import UserMenu from '@/components/UserMenu';
+import AuthStatus from '@/components/AuthStatus';
 
 export default function Dashboard() {
   const { skills, loading, createSkill } = useSkills();
@@ -35,10 +37,18 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="max-w-6xl mx-auto p-6">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Learning Dashboard</h1>
-          <p className="text-gray-400">
-            Track your skills and knowledge growth • {skills.length} total skills
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Learning Dashboard</h1>
+              <p className="text-gray-400">
+                Track your skills and knowledge growth • {skills.length} total skills
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <AuthStatus />
+              <UserMenu />
+            </div>
+          </div>
         </header>
 
         <div className="flex flex-col md:flex-row gap-4 mb-6">
