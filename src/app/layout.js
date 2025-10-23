@@ -2,6 +2,7 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/hooks/useAuth';
+import { ThemeProvider } from '@/hooks/useTheme';
 import AppLayout from '@/components/layout/AppLayout';
 
 const inter = Inter({ 
@@ -12,13 +13,15 @@ const inter = Inter({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans bg-[#0a0a0a] text-white antialiased`}>
-        <AuthProvider>
-          <AppLayout>
-            {children}
-          </AppLayout>
-        </AuthProvider>
+    <html lang="en" className="light">
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <ThemeProvider>
+          <AuthProvider>
+            <AppLayout>
+              {children}
+            </AppLayout>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

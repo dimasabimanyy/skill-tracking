@@ -1,6 +1,39 @@
 // Theme constants for consistent design system
 
-export const colors = {
+export const lightColors = {
+  // Background layers
+  bg: {
+    primary: '#ffffff',
+    secondary: '#f8f9fa',
+    tertiary: '#f1f3f4', 
+    elevated: '#ffffff',
+  },
+  
+  // Borders and dividers
+  border: {
+    primary: 'rgba(0, 0, 0, 0.08)',
+    secondary: 'rgba(0, 0, 0, 0.05)', 
+    accent: 'rgba(59, 130, 246, 0.2)',
+  },
+  
+  // Text hierarchy
+  text: {
+    primary: '#1a1a1a',
+    secondary: '#6b7280',
+    tertiary: '#9ca3af',
+    accent: '#2563eb',
+  },
+  
+  // Status colors
+  status: {
+    success: '#059669',
+    warning: '#d97706', 
+    error: '#dc2626',
+    info: '#2563eb',
+  }
+};
+
+export const darkColors = {
   // Background layers
   bg: {
     primary: '#0a0a0a',
@@ -19,17 +52,17 @@ export const colors = {
   // Text hierarchy
   text: {
     primary: '#ffffff',
-    secondary: '#a1a1aa', // gray-400
-    tertiary: '#71717a',  // gray-500
-    accent: '#60a5fa',    // blue-400
+    secondary: '#a1a1aa',
+    tertiary: '#71717a', 
+    accent: '#60a5fa',
   },
   
   // Status colors
   status: {
-    success: '#22c55e',   // green-500
-    warning: '#f59e0b',   // amber-500
-    error: '#ef4444',     // red-500
-    info: '#3b82f6',      // blue-500
+    success: '#22c55e',
+    warning: '#f59e0b',
+    error: '#ef4444',
+    info: '#3b82f6',
   }
 };
 

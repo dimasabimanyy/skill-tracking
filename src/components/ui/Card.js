@@ -2,12 +2,25 @@
 import { motion } from 'framer-motion';
 import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/hooks/useTheme';
 
 const cardVariants = {
-  default: 'bg-[#111111] border-white/[0.08] shadow-xl shadow-black/20',
-  elevated: 'bg-[#1a1a1a] border-white/[0.12] shadow-2xl shadow-black/40',
-  interactive: 'bg-[#111111] border-white/[0.08] shadow-xl shadow-black/20 hover:border-white/[0.12] hover:shadow-2xl hover:shadow-black/30 cursor-pointer',
-  glass: 'bg-white/[0.02] backdrop-blur-xl border-white/[0.08] shadow-xl shadow-black/20',
+  default: {
+    light: 'bg-white border border-gray-200 shadow-md shadow-gray-200/50',
+    dark: 'bg-[#111111] border border-white/[0.08] shadow-xl shadow-black/20'
+  },
+  elevated: {
+    light: 'bg-white border border-gray-200 shadow-lg shadow-gray-300/60',
+    dark: 'bg-[#1a1a1a] border border-white/[0.12] shadow-2xl shadow-black/40'
+  },
+  interactive: {
+    light: 'bg-white border border-gray-200 shadow-md shadow-gray-200/50 hover:border-gray-300 hover:shadow-lg hover:shadow-gray-300/60 cursor-pointer',
+    dark: 'bg-[#111111] border border-white/[0.08] shadow-xl shadow-black/20 hover:border-white/[0.12] hover:shadow-2xl hover:shadow-black/30 cursor-pointer'
+  },
+  glass: {
+    light: 'bg-white/80 backdrop-blur-xl border border-gray-200/60 shadow-md shadow-gray-200/40',
+    dark: 'bg-white/[0.02] backdrop-blur-xl border border-white/[0.08] shadow-xl shadow-black/20'
+  },
 };
 
 const Card = forwardRef(({ 
@@ -17,13 +30,19 @@ const Card = forwardRef(({
   hover = false,
   ...props 
 }, ref) => {
+  const { theme } = useTheme();
+
   const baseClasses = cn(
     // Base card styles
     'rounded-2xl p-6 transition-all duration-300 ease-in-out',
     // Variant styles
-    cardVariants[variant],
+    cardVariants[variant]?.[theme] || cardVariants[variant],
     // Hover effect if not already included in variant
-    hover && variant === 'default' && 'hover:border-white/[0.12] hover:shadow-2xl hover:shadow-black/30',
+    hover && variant === 'default' && (
+      theme === 'light' 
+        ? 'hover:border-gray-300 hover:shadow-lg hover:shadow-gray-300/60'
+        : 'hover:border-white/[0.12] hover:shadow-2xl hover:shadow-black/30'
+    ),
     // Custom classes
     className
   );

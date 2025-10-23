@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useSkills } from '@/hooks/useSkills';
+import { useTheme } from '@/hooks/useTheme';
 import { useGoals } from '@/hooks/useGoals';
 import { useAuth } from '@/hooks/useAuth';
 import { 
@@ -27,6 +28,7 @@ export default function Dashboard() {
   const { skills, loading } = useSkills();
   const { goals, loading: goalsLoading, createGoal } = useGoals();
   const { user } = useAuth();
+  const { theme } = useTheme();
   const router = useRouter();
   const [isCreateGoalModalOpen, setIsCreateGoalModalOpen] = useState(false);
 
@@ -67,10 +69,10 @@ export default function Dashboard() {
         <motion.div variants={item} className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
+              <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white transition-colors">
                 Welcome back{user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ''}
               </h1>
-              <p className="text-gray-400 text-lg">
+              <p className="text-lg text-gray-600 dark:text-gray-400 transition-colors">
                 Track your learning journey and achieve your goals
               </p>
             </div>
@@ -100,8 +102,8 @@ export default function Dashboard() {
                 <Target className="text-blue-400" size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Total Goals</p>
-                <p className="text-2xl font-bold text-white">{totalGoals}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Total Goals</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{totalGoals}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="blue" size="xs">{completedGoals} completed</Badge>
                 </div>
@@ -115,8 +117,8 @@ export default function Dashboard() {
                 <BookOpen className="text-green-400" size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Total Skills</p>
-                <p className="text-2xl font-bold text-white">{totalSkills}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Total Skills</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{totalSkills}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="green" size="xs">{completedSkills} done</Badge>
                 </div>
@@ -130,8 +132,8 @@ export default function Dashboard() {
                 <Clock className="text-amber-400" size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-400">In Progress</p>
-                <p className="text-2xl font-bold text-white">{inProgressSkills}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">In Progress</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{inProgressSkills}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="yellow" size="xs">Active learning</Badge>
                 </div>
@@ -145,8 +147,8 @@ export default function Dashboard() {
                 <TrendingUp className="text-purple-400" size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Completion Rate</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Completion Rate</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
                   {totalSkills > 0 ? Math.round((completedSkills / totalSkills) * 100) : 0}%
                 </p>
                 <div className="flex items-center gap-2 mt-1">
@@ -160,7 +162,7 @@ export default function Dashboard() {
         {/* Active Goals */}
         <motion.div variants={item} className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">Active Goals</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Active Goals</h2>
             <Button 
               onClick={() => router.push('/goals')} 
               variant="ghost"
@@ -174,7 +176,9 @@ export default function Dashboard() {
           {goalsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="bg-[#111111] rounded-2xl p-6 h-48 animate-pulse"></div>
+                <div key={i} className={`rounded-2xl p-6 h-48 animate-pulse transition-colors ${
+                  theme === 'light' ? 'bg-gray-200' : 'bg-[#111111]'
+                }`}></div>
               ))}
             </div>
           ) : goals.length === 0 ? (
@@ -182,8 +186,8 @@ export default function Dashboard() {
               <div className="p-4 bg-blue-500/10 rounded-2xl w-fit mx-auto mb-4">
                 <Target className="text-blue-400" size={32} />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">No goals yet</h3>
-              <p className="text-gray-400 mb-6 max-w-md mx-auto">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors">No goals yet</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto transition-colors">
                 Start your learning journey by creating your first goal. We'll help you break it down into manageable skills.
               </p>
               <Button onClick={() => setIsCreateGoalModalOpen(true)}>
@@ -212,7 +216,7 @@ export default function Dashboard() {
                         </div>
                       )}
                       <div className="flex-1">
-                        <h3 className="font-semibold text-white text-lg line-clamp-1">{goal.title}</h3>
+                        <h3 className="font-semibold text-gray-900 dark:text-white text-lg line-clamp-1 transition-colors">{goal.title}</h3>
                       </div>
                     </div>
                     {goal.is_achieved && (
@@ -220,19 +224,19 @@ export default function Dashboard() {
                     )}
                   </div>
                   
-                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2 transition-colors">
                     {goal.description || 'No description'}
                   </p>
                   
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-400">Progress</span>
-                      <span className="text-gray-300">
+                      <span className="text-gray-500 dark:text-gray-400 transition-colors">Progress</span>
+                      <span className="text-gray-700 dark:text-gray-300 transition-colors">
                         {goal.completed_skills || 0}/{goal.skills_count || 0} skills
                       </span>
                     </div>
                     
-                    <div className="w-full bg-white/[0.05] rounded-full h-2">
+                    <div className="w-full bg-gray-200 dark:bg-white/[0.05] rounded-full h-2 transition-colors">
                       <div 
                         className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
                         style={{ 
@@ -244,7 +248,7 @@ export default function Dashboard() {
                     </div>
                     
                     {goal.target_date && (
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 transition-colors">
                         <Calendar size={12} />
                         <span>Target: {new Date(goal.target_date).toLocaleDateString()}</span>
                       </div>
@@ -259,7 +263,7 @@ export default function Dashboard() {
         {/* Recent Skills */}
         <motion.div variants={item}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">Recent Skills</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Recent Skills</h2>
             <Button 
               onClick={() => router.push('/skills')} 
               variant="ghost"
@@ -273,7 +277,9 @@ export default function Dashboard() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-[#111111] rounded-2xl p-4 h-24 animate-pulse"></div>
+                <div key={i} className={`rounded-2xl p-4 h-24 animate-pulse transition-colors ${
+                  theme === 'light' ? 'bg-gray-200' : 'bg-[#111111]'
+                }`}></div>
               ))}
             </div>
           ) : skills.length === 0 ? (
@@ -281,8 +287,8 @@ export default function Dashboard() {
               <div className="p-3 bg-purple-500/10 rounded-xl w-fit mx-auto mb-3">
                 <BookOpen className="text-purple-400" size={24} />
               </div>
-              <h3 className="font-medium text-white mb-1">No skills yet</h3>
-              <p className="text-gray-400 text-sm">
+              <h3 className="font-medium text-gray-900 dark:text-white mb-1 transition-colors">No skills yet</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm transition-colors">
                 Skills will appear here once you create goals with learning roadmaps.
               </p>
             </Card>
@@ -296,7 +302,7 @@ export default function Dashboard() {
                   className="p-4"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-white line-clamp-1">{skill.title}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-white line-clamp-1 transition-colors">{skill.title}</h3>
                     <Badge 
                       variant={skill.status === 'done' ? 'green' : skill.status === 'in_progress' ? 'yellow' : 'gray'}
                       size="xs"
@@ -304,10 +310,10 @@ export default function Dashboard() {
                       {skill.status === 'done' ? 'Done' : skill.status === 'in_progress' ? 'In Progress' : 'Not Started'}
                     </Badge>
                   </div>
-                  <p className="text-gray-400 text-sm line-clamp-1 mb-3">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-1 mb-3 transition-colors">
                     {skill.description || 'No description'}
                   </p>
-                  <div className="w-full bg-white/[0.05] rounded-full h-1.5">
+                  <div className="w-full bg-gray-200 dark:bg-white/[0.05] rounded-full h-1.5 transition-colors">
                     <div 
                       className={`h-1.5 rounded-full transition-all duration-300 ${
                         skill.status === 'done' ? 'bg-green-500' 

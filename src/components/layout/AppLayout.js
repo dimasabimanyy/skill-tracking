@@ -1,18 +1,24 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
+import { useTheme } from '@/hooks/useTheme';
 import Sidebar from './Sidebar';
 import TopNavbar from './TopNavbar';
 
 export default function AppLayout({ children }) {
   const pathname = usePathname();
+  const { theme } = useTheme();
   
   // Check if we're on auth pages (no sidebar/navbar)
   const isAuthPage = pathname?.startsWith('/auth');
 
   if (isAuthPage) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#0f0f23]/20">
+      <main className={`min-h-screen transition-colors duration-300 ${
+        theme === 'light'
+          ? 'bg-gradient-to-br from-gray-50 via-white to-blue-50/20'
+          : 'bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#0f0f23]/20'
+      }`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={pathname}
@@ -29,7 +35,9 @@ export default function AppLayout({ children }) {
   }
 
   return (
-    <div className="flex h-screen bg-[#0a0a0a] overflow-hidden">
+    <div className={`flex h-screen overflow-hidden transition-colors duration-300 ${
+      theme === 'light' ? 'bg-gray-50' : 'bg-[#0a0a0a]'
+    }`}>
       {/* Sidebar */}
       <Sidebar />
       
@@ -39,7 +47,11 @@ export default function AppLayout({ children }) {
         <TopNavbar />
         
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#0f0f23]/10">
+        <main className={`flex-1 overflow-y-auto transition-colors duration-300 ${
+          theme === 'light'
+            ? 'bg-gradient-to-br from-gray-50 via-white to-blue-50/10'
+            : 'bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#0f0f23]/10'
+        }`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}

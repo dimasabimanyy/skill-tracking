@@ -3,6 +3,7 @@ import { useEffect, Fragment } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { createPortal } from 'react-dom';
+import { useTheme } from '@/hooks/useTheme';
 
 const backdropVariants = {
   hidden: { opacity: 0 },
@@ -55,6 +56,7 @@ export default function Modal({
   closeOnBackdrop = true,
   closeOnEscape = true 
 }) {
+  const { theme } = useTheme();
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && closeOnEscape && isOpen) {
@@ -96,21 +98,31 @@ export default function Modal({
             animate="visible"
             exit="exit"
             className={`
-              relative bg-[#111111] rounded-2xl border border-white/[0.08] 
-              shadow-2xl shadow-black/40 w-full ${sizeClasses[size]}
+              relative rounded-2xl border w-full ${sizeClasses[size]}
               max-h-[90vh] overflow-hidden flex flex-col
+              ${theme === 'light' 
+                ? 'bg-white border-gray-200 shadow-2xl shadow-gray-500/20' 
+                : 'bg-[#111111] border-white/[0.08] shadow-2xl shadow-black/40'}
             `}
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
+              <div className={`flex items-center justify-between p-6 border-b ${
+                theme === 'light' ? 'border-gray-200' : 'border-white/[0.08]'
+              }`}>
                 {title && (
-                  <h2 className="text-xl font-semibold text-white">{title}</h2>
+                  <h2 className={`text-xl font-semibold ${
+                    theme === 'light' ? 'text-gray-900' : 'text-white'
+                  }`}>{title}</h2>
                 )}
                 {showCloseButton && (
                   <motion.button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-white transition-colors p-1.5 hover:bg-white/[0.05] rounded-lg"
+                    className={`transition-colors p-1.5 rounded-lg ${
+                      theme === 'light' 
+                        ? 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' 
+                        : 'text-gray-400 hover:text-white hover:bg-white/[0.05]'
+                    }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
