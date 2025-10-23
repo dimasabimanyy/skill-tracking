@@ -12,14 +12,16 @@ import AuthStatus from '@/components/AuthStatus';
 import { useGoals } from '@/hooks/useGoals';
 import Card from '@/components/ui/Card';
 import CreateSkillModal from '@/components/CreateSkillModal';
+import CreateGoalModal from '@/components/CreateGoalModal';
 
 export default function Dashboard() {
   const { skills, loading, createSkill } = useSkills();
-  const { goals, loading: goalsLoading } = useGoals();
+  const { goals, loading: goalsLoading, createGoal } = useGoals();
   const router = useRouter();
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateGoalModalOpen, setIsCreateGoalModalOpen] = useState(false);
 
   const filteredSkills = skills.filter(skill => {
     const matchesFilter = filter === 'all' || skill.status === filter;
@@ -30,6 +32,10 @@ export default function Dashboard() {
 
   const handleCreateSkill = async (skillData) => {
     await createSkill(skillData);
+  };
+
+  const handleCreateGoal = async (goalData) => {
+    await createGoal(goalData);
   };
 
   const getFilteredCount = () => {
@@ -93,7 +99,7 @@ export default function Dashboard() {
               <Target className="mx-auto h-8 w-8 text-gray-400 mb-3" />
               <h3 className="font-medium text-white mb-1">No goals yet</h3>
               <p className="text-gray-400 text-sm mb-4">Create your first learning goal</p>
-              <Button onClick={() => router.push('/goals/new')} size="sm">
+              <Button onClick={() => setIsCreateGoalModalOpen(true)} size="sm">
                 <Plus size={14} className="mr-2" />
                 Create Goal
               </Button>
@@ -158,6 +164,13 @@ export default function Dashboard() {
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
           onSkillCreated={handleCreateSkill}
+        />
+
+        {/* Create Goal Modal */}
+        <CreateGoalModal
+          isOpen={isCreateGoalModalOpen}
+          onClose={() => setIsCreateGoalModalOpen(false)}
+          onGoalCreated={handleCreateGoal}
         />
       </div>
     </div>

@@ -8,6 +8,7 @@ import Card from '@/components/ui/Card';
 import ProgressBar from '@/components/ui/ProgressBar';
 import UserMenu from '@/components/UserMenu';
 import AuthStatus from '@/components/AuthStatus';
+import CreateGoalModal from '@/components/CreateGoalModal';
 import { formatDate } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -15,6 +16,7 @@ export default function GoalsPage() {
   const router = useRouter();
   const { goals, loading, createGoal } = useGoals();
   const [filter, setFilter] = useState('all');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const filteredGoals = goals.filter(goal => {
     if (filter === 'all') return true;
@@ -23,8 +25,8 @@ export default function GoalsPage() {
     return true;
   });
 
-  const handleCreateGoal = () => {
-    router.push('/goals/new');
+  const handleCreateGoal = async (goalData) => {
+    await createGoal(goalData);
   };
 
   const getProgressPercentage = (goal) => {
@@ -104,7 +106,7 @@ export default function GoalsPage() {
           
           <div className="flex-1"></div>
           
-          <Button onClick={handleCreateGoal} className="flex items-center gap-2">
+          <Button onClick={() => setIsCreateModalOpen(true)} className="flex items-center gap-2">
             <Plus size={16} />
             New Goal
           </Button>
@@ -120,7 +122,7 @@ export default function GoalsPage() {
             <p className="text-gray-400 mb-6">
               Start by creating your first learning goal and build a roadmap to achieve it.
             </p>
-            <Button onClick={handleCreateGoal} className="flex items-center gap-2 mx-auto">
+            <Button onClick={() => setIsCreateModalOpen(true)} className="flex items-center gap-2 mx-auto">
               <Plus size={16} />
               Create Your First Goal
             </Button>
@@ -226,6 +228,13 @@ export default function GoalsPage() {
             </Card>
           </div>
         )}
+
+        {/* Create Goal Modal */}
+        <CreateGoalModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onGoalCreated={handleCreateGoal}
+        />
       </div>
     </div>
   );
