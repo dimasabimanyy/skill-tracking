@@ -4,12 +4,14 @@ import { useParams, useRouter } from 'next/navigation';
 // import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, Edit3, Save, X } from 'lucide-react';
 import { useSkills } from '@/hooks/useSkills';
+import { useTopics } from '@/hooks/useTopics';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import ProgressBar from '@/components/ui/ProgressBar';
+import TopicsList from '@/components/TopicsList';
 import { getProgressValue, getStatusColor, getStatusLabel, formatDate } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -18,6 +20,7 @@ export default function SkillDetailPage() {
   const router = useRouter();
   const { skills, updateSkill, loading } = useSkills();
   const [skill, setSkill] = useState(null);
+  const { topics, loading: topicsLoading, createTopic, updateTopic, deleteTopic } = useTopics(params.id);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [isSaving, setIsSaving] = useState(false);
@@ -231,7 +234,7 @@ export default function SkillDetailPage() {
             </div>
 
             {/* Notes */}
-            <div>
+            <div className="mb-8">
               <h3 className="text-lg font-semibold mb-3">Notes</h3>
               {isEditing ? (
                 <Textarea
@@ -254,6 +257,17 @@ export default function SkillDetailPage() {
                 </div>
               )}
             </div>
+          </Card>
+
+          {/* Topics Section */}
+          <Card className="mt-6">
+            <TopicsList
+              topics={topics}
+              loading={topicsLoading}
+              onCreateTopic={createTopic}
+              onUpdateTopic={updateTopic}
+              onDeleteTopic={deleteTopic}
+            />
           </Card>
         </div>
       </div>
