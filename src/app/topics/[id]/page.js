@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar, Clock, Edit3, Save, X, BookOpen, Plus, StickyNote } from 'lucide-react';
 import { useTopics } from '@/hooks/useTopics';
 import { useNotes } from '@/hooks/useNotes';
+import { useTheme } from '@/hooks/useTheme';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -16,6 +17,7 @@ import { formatDistanceToNow } from 'date-fns';
 export default function TopicDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { theme } = useTheme();
   const [topic, setTopic] = useState(null);
   const [skillId, setSkillId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);

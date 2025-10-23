@@ -48,18 +48,16 @@ export function ThemeProvider({ children }) {
     isLight: theme === 'light'
   };
 
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-white">
-        {children}
-      </div>
-    );
-  }
-
+  // Always provide context, but use safe defaults during hydration
   return (
     <ThemeContext.Provider value={value}>
-      {children}
+      {!mounted ? (
+        <div className="min-h-screen bg-white">
+          {children}
+        </div>
+      ) : (
+        children
+      )}
     </ThemeContext.Provider>
   );
 }

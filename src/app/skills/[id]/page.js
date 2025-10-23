@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar, Clock, Edit3, Save, X } from 'lucide-react';
 import { useSkills } from '@/hooks/useSkills';
 import { useTopics } from '@/hooks/useTopics';
+import { useTheme } from '@/hooks/useTheme';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -19,6 +20,7 @@ export default function SkillDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { skills, updateSkill, loading } = useSkills();
+  const { theme } = useTheme();
   const [skill, setSkill] = useState(null);
   const { topics, loading: topicsLoading, createTopic, updateTopic, deleteTopic } = useTopics(params.id);
   const [isEditing, setIsEditing] = useState(false);
