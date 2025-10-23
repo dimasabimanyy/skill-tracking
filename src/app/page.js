@@ -11,6 +11,7 @@ import UserMenu from '@/components/UserMenu';
 import AuthStatus from '@/components/AuthStatus';
 import { useGoals } from '@/hooks/useGoals';
 import Card from '@/components/ui/Card';
+import CreateSkillModal from '@/components/CreateSkillModal';
 
 export default function Dashboard() {
   const { skills, loading, createSkill } = useSkills();
@@ -18,6 +19,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const filteredSkills = skills.filter(skill => {
     const matchesFilter = filter === 'all' || skill.status === filter;
@@ -26,11 +28,8 @@ export default function Dashboard() {
     return matchesFilter && matchesSearch;
   });
 
-  const handleCreateSkill = () => {
-    createSkill({
-      title: 'New Skill',
-      description: 'Click to edit and add details'
-    });
+  const handleCreateSkill = async (skillData) => {
+    await createSkill(skillData);
   };
 
   const getFilteredCount = () => {
@@ -136,7 +135,7 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <SearchBar value={search} onChange={setSearch} />
           <StatusFilter value={filter} onChange={setFilter} />
-          <Button onClick={handleCreateSkill} className="flex items-center gap-2 shrink-0">
+          <Button onClick={() => setIsCreateModalOpen(true)} className="flex items-center gap-2 shrink-0">
             <Plus size={16} />
             Add Skill
           </Button>
@@ -153,6 +152,13 @@ export default function Dashboard() {
         ) : null}
 
         <SkillList skills={filteredSkills} loading={loading} />
+
+        {/* Create Skill Modal */}
+        <CreateSkillModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSkillCreated={handleCreateSkill}
+        />
       </div>
     </div>
   );
