@@ -33,8 +33,8 @@ const Card = forwardRef(({
   const { theme } = useTheme();
 
   const baseClasses = cn(
-    // Base card styles - tighter, more refined
-    'rounded-lg p-4 transition-all duration-200 ease-out',
+    // Base card styles - warm and inviting
+    'rounded-xl p-6 transition-all duration-200 ease-out',
     // Variant styles
     cardVariants[variant]?.[theme] || cardVariants[variant],
     // Hover effect if not already included in variant

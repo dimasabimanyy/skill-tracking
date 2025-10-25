@@ -124,43 +124,59 @@ body {
   overflow: hidden;
 }
 
-/* Vercel-inspired component patterns */
+/* Personal workspace component patterns */
 .surface-base {
   background: white;
-  border: 1px solid #e5e5e5;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  border: 1px solid rgb(229 231 235 / 0.8);
+  box-shadow: 
+    0 1px 3px 0 rgb(0 0 0 / 0.08),
+    0 1px 2px -1px rgb(0 0 0 / 0.08);
 }
 
 .dark .surface-base {
-  background: #111111;
-  border: 1px solid #262626;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+  background: rgb(15 23 42 / 0.6);
+  border: 1px solid rgb(51 65 85 / 0.6);
+  box-shadow: 
+    0 1px 3px 0 rgb(0 0 0 / 0.5),
+    0 1px 2px -1px rgb(0 0 0 / 0.5);
 }
 
 .surface-elevated {
   background: white;
-  border: 1px solid #e5e5e5;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  border: 1px solid rgb(229 231 235 / 0.8);
+  box-shadow: 
+    0 4px 6px -1px rgb(0 0 0 / 0.08),
+    0 2px 4px -2px rgb(0 0 0 / 0.08),
+    0 0 0 1px rgb(0 0 0 / 0.02);
 }
 
 .dark .surface-elevated {
-  background: #151515;
-  border: 1px solid #2a2a2a;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.6), 0 2px 4px -2px rgb(0 0 0 / 0.6);
+  background: rgb(15 23 42 / 0.8);
+  border: 1px solid rgb(51 65 85 / 0.8);
+  box-shadow: 
+    0 4px 6px -1px rgb(0 0 0 / 0.6),
+    0 2px 4px -2px rgb(0 0 0 / 0.6),
+    0 0 0 1px rgb(0 0 0 / 0.1);
 }
 
-/* Subtle hover elevation */
+/* Gentle hover elevation with warm touch */
 .hover-lift {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hover-lift:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 12px -4px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 25px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1),
+    0 0 0 1px rgb(99 102 241 / 0.05);
 }
 
 .dark .hover-lift:hover {
-  box-shadow: 0 8px 12px -4px rgb(0 0 0 / 0.8), 0 4px 6px -2px rgb(0 0 0 / 0.8);
+  box-shadow: 
+    0 10px 25px -3px rgb(0 0 0 / 0.7),
+    0 4px 6px -4px rgb(0 0 0 / 0.7),
+    0 0 0 1px rgb(129 140 248 / 0.1);
 }
 
 /* Typography scale */

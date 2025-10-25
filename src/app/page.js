@@ -2,46 +2,38 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useSkills } from '@/hooks/useSkills';
-import { useTheme } from '@/hooks/useTheme';
 import { useGoals } from '@/hooks/useGoals';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/hooks/useTheme';
 import { 
   Plus, 
   Target, 
   ArrowRight, 
   CheckCircle2, 
   BookOpen,
-  TrendingUp,
-  Clock,
-  Zap,
+  Sparkles,
   Calendar,
-  Award
+  ChevronRight
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
-import CreateSkillModal from '@/components/CreateSkillModal';
 import CreateGoalModal from '@/components/CreateGoalModal';
 
 export default function Dashboard() {
-  const { skills, loading } = useSkills();
   const { goals, loading: goalsLoading, createGoal } = useGoals();
   const { user } = useAuth();
   const { theme } = useTheme();
   const router = useRouter();
   const [isCreateGoalModalOpen, setIsCreateGoalModalOpen] = useState(false);
 
-  // Calculate statistics
-  const totalGoals = goals.length;
-  const completedGoals = goals.filter(g => g.is_achieved).length;
-  const totalSkills = skills.length;
-  const completedSkills = skills.filter(s => s.status === 'done').length;
-  const inProgressSkills = skills.filter(s => s.status === 'in_progress').length;
-
   const handleCreateGoal = async (goalData) => {
     await createGoal(goalData);
   };
+
+  // Get active goals (not completed)
+  const activeGoals = goals.filter(g => !g.is_achieved);
+  const completedGoals = goals.filter(g => g.is_achieved);
 
   const container = {
     hidden: { opacity: 0 },
@@ -66,331 +58,197 @@ export default function Dashboard() {
     }
   };
 
+  if (goalsLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center py-12">
+          <div className="animate-pulse space-y-4">
+            <div className={`h-8 rounded-lg w-64 mx-auto ${
+              theme === 'light' ? 'bg-neutral-200' : 'bg-neutral-800'
+            }`}></div>
+            <div className={`h-4 rounded w-48 mx-auto ${
+              theme === 'light' ? 'bg-neutral-200' : 'bg-neutral-800'
+            }`}></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 space-y-6">
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-      >
-        {/* Hero Section */}
-        <motion.div variants={item} className="mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className={`text-2xl font-semibold mb-2 transition-colors ${
-                theme === 'light' ? 'text-neutral-900' : 'text-white'
-              }`}>
-                Welcome back{user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ''}
-              </h1>
-              <p className={`transition-colors ${
-                theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
-              }`}>
-                Track your learning journey and achieve your goals
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => setIsCreateGoalModalOpen(true)}
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <Plus size={14} />
-                New Goal
-              </Button>
-              <Button 
-                onClick={() => router.push('/goals')}
-                variant="secondary"
-                size="sm"
-              >
-                View All Goals
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Stats Overview */}
-        <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <motion.div
-            whileHover={{ y: -1 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-md ${
-                  theme === 'light' ? 'bg-blue-50' : 'bg-blue-500/10'
-                }`}>
-                  <Target className="text-blue-500" size={16} />
-                </div>
-                <div>
-                  <p className={`text-xs font-medium transition-colors ${
-                    theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
-                  }`}>Total Goals</p>
-                  <p className={`text-xl font-semibold transition-colors ${
-                    theme === 'light' ? 'text-neutral-900' : 'text-white'
-                  }`}>{totalGoals}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="blue" size="xs">{completedGoals} completed</Badge>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -1 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-md ${
-                  theme === 'light' ? 'bg-emerald-50' : 'bg-emerald-500/10'
-                }`}>
-                  <BookOpen className="text-emerald-500" size={16} />
-                </div>
-                <div>
-                  <p className={`text-xs font-medium transition-colors ${
-                    theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
-                  }`}>Total Skills</p>
-                  <p className={`text-xl font-semibold transition-colors ${
-                    theme === 'light' ? 'text-neutral-900' : 'text-white'
-                  }`}>{totalSkills}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="green" size="xs">{completedSkills} done</Badge>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -1 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-md ${
-                  theme === 'light' ? 'bg-amber-50' : 'bg-amber-500/10'
-                }`}>
-                  <Clock className="text-amber-500" size={16} />
-                </div>
-                <div>
-                  <p className={`text-xs font-medium transition-colors ${
-                    theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
-                  }`}>In Progress</p>
-                  <p className={`text-xl font-semibold transition-colors ${
-                    theme === 'light' ? 'text-neutral-900' : 'text-white'
-                  }`}>{inProgressSkills}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="yellow" size="xs">Active learning</Badge>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -1 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-md ${
-                  theme === 'light' ? 'bg-purple-50' : 'bg-purple-500/10'
-                }`}>
-                  <TrendingUp className="text-purple-500" size={16} />
-                </div>
-                <div>
-                  <p className={`text-xs font-medium transition-colors ${
-                    theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
-                  }`}>Completion Rate</p>
-                  <p className={`text-xl font-semibold transition-colors ${
-                    theme === 'light' ? 'text-neutral-900' : 'text-white'
-                  }`}>
-                    {totalSkills > 0 ? Math.round((completedSkills / totalSkills) * 100) : 0}%
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="blue" size="xs">Overall progress</Badge>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        </motion.div>
-
-        {/* Active Goals */}
-        <motion.div variants={item} className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Active Goals</h2>
-            <Button 
-              onClick={() => router.push('/goals')} 
-              variant="ghost"
-              className="flex items-center gap-2"
-            >
-              View All
-              <ArrowRight size={16} />
-            </Button>
-          </div>
-          
-          {goalsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className={`rounded-2xl p-6 h-48 animate-pulse transition-colors ${
-                  theme === 'light' ? 'bg-gray-200' : 'bg-[#111111]'
-                }`}></div>
-              ))}
-            </div>
-          ) : goals.length === 0 ? (
-            <Card variant="glass" className="text-center py-12">
-              <div className="p-4 bg-blue-500/10 rounded-2xl w-fit mx-auto mb-4">
-                <Target className="text-blue-400" size={32} />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors">No goals yet</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto transition-colors">
-                Start your learning journey by creating your first goal. We'll help you break it down into manageable skills.
-              </p>
-              <Button onClick={() => setIsCreateGoalModalOpen(true)}>
-                <Plus size={16} className="mr-2" />
-                Create Your First Goal
-              </Button>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {goals.slice(0, 6).map((goal) => (
-                <Card 
-                  key={goal.id} 
-                  variant="interactive"
-                  onClick={() => router.push(`/goals/${goal.id}`)}
-                  className="p-6"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      {goal.is_achieved ? (
-                        <div className="p-2 bg-green-500/10 rounded-lg">
-                          <CheckCircle2 className="text-green-400" size={20} />
-                        </div>
-                      ) : (
-                        <div className="p-2 bg-blue-500/10 rounded-lg">
-                          <Target className="text-blue-400" size={20} />
-                        </div>
-                      )}
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 dark:text-white text-lg line-clamp-1 transition-colors">{goal.title}</h3>
-                      </div>
-                    </div>
-                    {goal.is_achieved && (
-                      <Badge variant="green" size="xs">Completed</Badge>
-                    )}
-                  </div>
-                  
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2 transition-colors">
-                    {goal.description || 'No description'}
-                  </p>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500 dark:text-gray-400 transition-colors">Progress</span>
-                      <span className="text-gray-700 dark:text-gray-300 transition-colors">
-                        {goal.completed_skills || 0}/{goal.skills_count || 0} skills
-                      </span>
-                    </div>
-                    
-                    <div className="w-full bg-gray-200 dark:bg-white/[0.05] rounded-full h-2 transition-colors">
-                      <div 
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ 
-                          width: goal.skills_count > 0 
-                            ? `${((goal.completed_skills || 0) / goal.skills_count) * 100}%` 
-                            : '0%' 
-                        }}
-                      />
-                    </div>
-                    
-                    {goal.target_date && (
-                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 transition-colors">
-                        <Calendar size={12} />
-                        <span>Target: {new Date(goal.target_date).toLocaleDateString()}</span>
-                      </div>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
-        {/* Recent Skills */}
-        <motion.div variants={item}>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Recent Skills</h2>
-            <Button 
-              onClick={() => router.push('/skills')} 
-              variant="ghost"
-              className="flex items-center gap-2"
-            >
-              View All
-              <ArrowRight size={16} />
-            </Button>
-          </div>
-          
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className={`rounded-2xl p-4 h-24 animate-pulse transition-colors ${
-                  theme === 'light' ? 'bg-gray-200' : 'bg-[#111111]'
-                }`}></div>
-              ))}
-            </div>
-          ) : skills.length === 0 ? (
-            <Card variant="glass" className="text-center py-8">
-              <div className="p-3 bg-purple-500/10 rounded-xl w-fit mx-auto mb-3">
-                <BookOpen className="text-purple-400" size={24} />
-              </div>
-              <h3 className="font-medium text-gray-900 dark:text-white mb-1 transition-colors">No skills yet</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm transition-colors">
-                Skills will appear here once you create goals with learning roadmaps.
-              </p>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {skills.slice(0, 4).map((skill) => (
-                <Card 
-                  key={skill.id} 
-                  variant="interactive"
-                  onClick={() => router.push(`/skills/${skill.id}`)}
-                  className="p-4"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-gray-900 dark:text-white line-clamp-1 transition-colors">{skill.title}</h3>
-                    <Badge 
-                      variant={skill.status === 'done' ? 'green' : skill.status === 'in_progress' ? 'yellow' : 'gray'}
-                      size="xs"
-                    >
-                      {skill.status === 'done' ? 'Done' : skill.status === 'in_progress' ? 'In Progress' : 'Not Started'}
-                    </Badge>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-1 mb-3 transition-colors">
-                    {skill.description || 'No description'}
-                  </p>
-                  <div className="w-full bg-gray-200 dark:bg-white/[0.05] rounded-full h-1.5 transition-colors">
-                    <div 
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        skill.status === 'done' ? 'bg-green-500' 
-                        : skill.status === 'in_progress' ? 'bg-yellow-500' 
-                        : 'bg-gray-600'
-                      }`}
-                      style={{ 
-                        width: skill.status === 'done' ? '100%' 
-                               : skill.status === 'in_progress' ? '50%' 
-                               : '0%' 
-                      }}
-                    />
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </motion.div>
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="space-y-12"
+    >
+      {/* Welcome Section */}
+      <motion.div variants={item} className="text-center space-y-4">
+        <h1 className={`text-3xl font-semibold transition-colors ${
+          theme === 'light' ? 'text-neutral-900' : 'text-white'
+        }`}>
+          Your Learning Journey
+        </h1>
+        <p className={`text-lg max-w-2xl mx-auto transition-colors ${
+          theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
+        }`}>
+          Focus on what matters. Set meaningful goals, build skills that count, and track your progress along the way.
+        </p>
       </motion.div>
+
+      {/* Quick Actions */}
+      {activeGoals.length === 0 && (
+        <motion.div variants={item}>
+          <Card className="text-center py-16 px-8">
+            <div className={`w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center ${
+              theme === 'light' ? 'bg-indigo-50' : 'bg-indigo-900/30'
+            }`}>
+              <Sparkles className="text-indigo-500" size={24} />
+            </div>
+            <h2 className={`text-xl font-semibold mb-3 transition-colors ${
+              theme === 'light' ? 'text-neutral-900' : 'text-white'
+            }`}>
+              Ready to start learning?
+            </h2>
+            <p className={`mb-8 max-w-md mx-auto transition-colors ${
+              theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
+            }`}>
+              Create your first learning goal and begin building the skills that will take you where you want to go.
+            </p>
+            <Button 
+              onClick={() => setIsCreateGoalModalOpen(true)}
+              className="flex items-center gap-2 mx-auto"
+            >
+              <Plus size={16} />
+              Create Your First Goal
+            </Button>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Active Goals */}
+      {activeGoals.length > 0 && (
+        <motion.div variants={item} className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className={`text-xl font-semibold transition-colors ${
+              theme === 'light' ? 'text-neutral-900' : 'text-white'
+            }`}>
+              Active Goals
+            </h2>
+            <Button 
+              onClick={() => setIsCreateGoalModalOpen(true)}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Plus size={14} />
+              New Goal
+            </Button>
+          </div>
+          
+          <div className="grid gap-4">
+            {activeGoals.slice(0, 3).map((goal) => (
+              <motion.div
+                key={goal.id}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <Card 
+                  variant="interactive"
+                  className="p-6 cursor-pointer"
+                  onClick={() => router.push(`/goals/${goal.id}`)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`w-3 h-3 rounded-full ${
+                          theme === 'light' ? 'bg-indigo-500' : 'bg-indigo-400'
+                        }`}></div>
+                        <h3 className={`font-semibold transition-colors ${
+                          theme === 'light' ? 'text-neutral-900' : 'text-white'
+                        }`}>
+                          {goal.title}
+                        </h3>
+                      </div>
+                      {goal.description && (
+                        <p className={`mb-4 transition-colors ${
+                          theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
+                        }`}>
+                          {goal.description}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-4 text-sm">
+                        {goal.target_date && (
+                          <div className={`flex items-center gap-1 ${
+                            theme === 'light' ? 'text-neutral-500' : 'text-neutral-500'
+                          }`}>
+                            <Calendar size={14} />
+                            <span>Target: {new Date(goal.target_date).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <ChevronRight className={`transition-colors ${
+                      theme === 'light' ? 'text-neutral-400' : 'text-neutral-600'
+                    }`} size={20} />
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          {activeGoals.length > 3 && (
+            <div className="text-center">
+              <Button 
+                onClick={() => router.push('/goals')} 
+                variant="ghost"
+                className="flex items-center gap-2 mx-auto"
+              >
+                View All Goals <ArrowRight size={14} />
+              </Button>
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* Completed Goals Section */}
+      {completedGoals.length > 0 && (
+        <motion.div variants={item} className="space-y-6">
+          <h2 className={`text-xl font-semibold transition-colors ${
+            theme === 'light' ? 'text-neutral-900' : 'text-white'
+          }`}>
+            Completed Goals
+          </h2>
+          
+          <div className="grid gap-3">
+            {completedGoals.slice(0, 2).map((goal) => (
+              <motion.div
+                key={goal.id}
+                whileHover={{ y: -1 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <Card 
+                  variant="interactive"
+                  className="p-4 cursor-pointer opacity-75 hover:opacity-100"
+                  onClick={() => router.push(`/goals/${goal.id}`)}
+                >
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="text-emerald-500" size={20} />
+                    <div className="flex-1">
+                      <h4 className={`font-medium transition-colors ${
+                        theme === 'light' ? 'text-neutral-900' : 'text-white'
+                      }`}>
+                        {goal.title}
+                      </h4>
+                    </div>
+                    <Badge variant="green" size="xs">Completed</Badge>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* Create Goal Modal */}
       <CreateGoalModal
@@ -398,6 +256,6 @@ export default function Dashboard() {
         onClose={() => setIsCreateGoalModalOpen(false)}
         onGoalCreated={handleCreateGoal}
       />
-    </div>
+    </motion.div>
   );
 }
