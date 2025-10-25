@@ -6,20 +6,20 @@ import { useTheme } from '@/hooks/useTheme';
 
 const cardVariants = {
   default: {
-    light: 'bg-white border border-gray-200 shadow-md shadow-gray-200/50',
-    dark: 'bg-[#111111] border border-white/[0.08] shadow-xl shadow-black/20'
+    light: 'surface-base',
+    dark: 'surface-base'
   },
   elevated: {
-    light: 'bg-white border border-gray-200 shadow-lg shadow-gray-300/60',
-    dark: 'bg-[#1a1a1a] border border-white/[0.12] shadow-2xl shadow-black/40'
+    light: 'surface-elevated',
+    dark: 'surface-elevated'
   },
   interactive: {
-    light: 'bg-white border border-gray-200 shadow-md shadow-gray-200/50 hover:border-gray-300 hover:shadow-lg hover:shadow-gray-300/60 cursor-pointer',
-    dark: 'bg-[#111111] border border-white/[0.08] shadow-xl shadow-black/20 hover:border-white/[0.12] hover:shadow-2xl hover:shadow-black/30 cursor-pointer'
+    light: 'surface-base hover-lift cursor-pointer hover:border-gray-300',
+    dark: 'surface-base hover-lift cursor-pointer hover:border-neutral-700'
   },
   glass: {
-    light: 'bg-white/80 backdrop-blur-xl border border-gray-200/60 shadow-md shadow-gray-200/40',
-    dark: 'bg-white/[0.02] backdrop-blur-xl border border-white/[0.08] shadow-xl shadow-black/20'
+    light: 'bg-white/80 backdrop-blur-xl border border-gray-200/60 shadow-sm',
+    dark: 'bg-neutral-950/80 backdrop-blur-xl border border-neutral-800/60 shadow-sm'
   },
 };
 
@@ -33,16 +33,12 @@ const Card = forwardRef(({
   const { theme } = useTheme();
 
   const baseClasses = cn(
-    // Base card styles
-    'rounded-2xl p-6 transition-all duration-300 ease-in-out',
+    // Base card styles - tighter, more refined
+    'rounded-lg p-4 transition-all duration-200 ease-out',
     // Variant styles
     cardVariants[variant]?.[theme] || cardVariants[variant],
     // Hover effect if not already included in variant
-    hover && variant === 'default' && (
-      theme === 'light' 
-        ? 'hover:border-gray-300 hover:shadow-lg hover:shadow-gray-300/60'
-        : 'hover:border-white/[0.12] hover:shadow-2xl hover:shadow-black/30'
-    ),
+    hover && variant === 'default' && 'hover-lift',
     // Custom classes
     className
   );
@@ -53,8 +49,8 @@ const Card = forwardRef(({
         ref={ref}
         className={baseClasses}
         whileHover={{ 
-          y: -2,
-          transition: { duration: 0.2, ease: "easeInOut" }
+          y: -1,
+          transition: { duration: 0.15, ease: "easeOut" }
         }}
         {...props}
       >

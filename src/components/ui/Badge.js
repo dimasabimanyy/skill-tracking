@@ -4,48 +4,48 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 
 const badgeVariants = {
-  // Status variants
+  // Status variants - refined, minimal
   gray: {
-    light: 'bg-gray-100 text-gray-700 border-gray-200 shadow-sm',
-    dark: 'bg-white/[0.05] text-gray-300 border-white/[0.08] shadow-sm'
+    light: 'bg-neutral-100 text-neutral-600 border-neutral-200',
+    dark: 'bg-neutral-800 text-neutral-300 border-neutral-700'
   },
   yellow: {
-    light: 'bg-amber-100 text-amber-800 border-amber-200 shadow-sm',
-    dark: 'bg-amber-500/10 text-amber-300 border-amber-500/20 shadow-sm shadow-amber-500/10'
+    light: 'bg-amber-50 text-amber-700 border-amber-200',
+    dark: 'bg-amber-500/10 text-amber-300 border-amber-500/20'
   },
   green: {
-    light: 'bg-green-100 text-green-800 border-green-200 shadow-sm',
-    dark: 'bg-green-500/10 text-green-300 border-green-500/20 shadow-sm shadow-green-500/10'
+    light: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    dark: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
   },
   red: {
-    light: 'bg-red-100 text-red-800 border-red-200 shadow-sm',
-    dark: 'bg-red-500/10 text-red-300 border-red-500/20 shadow-sm shadow-red-500/10'
+    light: 'bg-red-50 text-red-700 border-red-200',
+    dark: 'bg-red-500/10 text-red-300 border-red-500/20'
   },
   blue: {
-    light: 'bg-blue-100 text-blue-800 border-blue-200 shadow-sm',
-    dark: 'bg-blue-500/10 text-blue-300 border-blue-500/20 shadow-sm shadow-blue-500/10'
+    light: 'bg-blue-50 text-blue-700 border-blue-200',
+    dark: 'bg-blue-500/10 text-blue-300 border-blue-500/20'
   },
   
-  // Special variants
+  // Special variants - more restrained
   primary: {
-    light: 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20',
-    dark: 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20'
+    light: 'bg-neutral-900 text-white border-transparent',
+    dark: 'bg-white text-neutral-900 border-transparent'
   },
   secondary: {
-    light: 'bg-gray-200 text-gray-700 border-gray-300 shadow-sm',
-    dark: 'bg-white/[0.08] text-white border-white/[0.12] shadow-sm'
+    light: 'bg-transparent text-neutral-600 border-neutral-200',
+    dark: 'bg-transparent text-neutral-400 border-neutral-700'
   },
   outline: {
-    light: 'bg-transparent text-gray-600 border-gray-300',
-    dark: 'bg-transparent text-gray-300 border-white/[0.20]'
+    light: 'bg-transparent text-neutral-600 border-neutral-300',
+    dark: 'bg-transparent text-neutral-400 border-neutral-600'
   },
 };
 
 const sizeVariants = {
   xs: 'px-1.5 py-0.5 text-xs font-medium',
-  sm: 'px-2 py-1 text-xs font-medium',
+  sm: 'px-2 py-0.5 text-xs font-medium',
   md: 'px-2.5 py-1 text-sm font-medium',
-  lg: 'px-3 py-1.5 text-sm font-medium',
+  lg: 'px-3 py-1 text-sm font-medium',
 };
 
 export default function Badge({ 
@@ -59,7 +59,7 @@ export default function Badge({
   const { theme } = useTheme();
 
   const baseClasses = cn(
-    'inline-flex items-center gap-1 rounded-lg border font-medium transition-all duration-200',
+    'inline-flex items-center gap-1 rounded-md border font-medium transition-all duration-200',
     badgeVariants[variant]?.[theme] || badgeVariants[variant],
     sizeVariants[size],
     className

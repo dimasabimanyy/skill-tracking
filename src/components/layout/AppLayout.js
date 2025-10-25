@@ -14,18 +14,16 @@ export default function AppLayout({ children }) {
 
   if (isAuthPage) {
     return (
-      <main className={`min-h-screen transition-colors duration-300 ${
-        theme === 'light'
-          ? 'bg-gradient-to-br from-gray-50 via-white to-blue-50/20'
-          : 'bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#0f0f23]/20'
+      <main className={`min-h-screen transition-colors duration-200 ${
+        theme === 'light' ? 'bg-white' : 'bg-[#0a0a0a]'
       }`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={pathname}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
           >
             {children}
           </motion.div>
@@ -35,8 +33,8 @@ export default function AppLayout({ children }) {
   }
 
   return (
-    <div className={`flex h-screen overflow-hidden transition-colors duration-300 ${
-      theme === 'light' ? 'bg-gray-50' : 'bg-[#0a0a0a]'
+    <div className={`flex h-screen overflow-hidden transition-colors duration-200 ${
+      theme === 'light' ? 'bg-white' : 'bg-[#0a0a0a]'
     }`}>
       {/* Sidebar */}
       <Sidebar />
@@ -47,18 +45,16 @@ export default function AppLayout({ children }) {
         <TopNavbar />
         
         {/* Page Content */}
-        <main className={`flex-1 overflow-y-auto transition-colors duration-300 ${
-          theme === 'light'
-            ? 'bg-gradient-to-br from-gray-50 via-white to-blue-50/10'
-            : 'bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#0f0f23]/10'
+        <main className={`flex-1 overflow-y-auto transition-colors duration-200 ${
+          theme === 'light' ? 'bg-neutral-50' : 'bg-[#0a0a0a]'
         }`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
               className="h-full"
             >
               {children}

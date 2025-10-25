@@ -6,50 +6,50 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 
 const buttonVariants = {
-  // Primary styles
+  // Primary - confident, decisive action
   default: {
-    light: 'bg-blue-600 text-white border-transparent hover:bg-blue-700 focus:ring-blue-500/50 shadow-lg shadow-blue-600/20',
-    dark: 'bg-blue-600 text-white border-transparent hover:bg-blue-700 focus:ring-blue-500/50 shadow-lg shadow-blue-600/20'
+    light: 'bg-neutral-900 text-white border-transparent hover:bg-neutral-800 focus:ring-neutral-500/30 shadow-sm',
+    dark: 'bg-white text-neutral-900 border-transparent hover:bg-neutral-100 focus:ring-white/30 shadow-sm'
   },
   primary: {
-    light: 'bg-blue-600 text-white border-transparent hover:bg-blue-700 focus:ring-blue-500/50 shadow-lg shadow-blue-600/20',
-    dark: 'bg-blue-600 text-white border-transparent hover:bg-blue-700 focus:ring-blue-500/50 shadow-lg shadow-blue-600/20'
+    light: 'bg-neutral-900 text-white border-transparent hover:bg-neutral-800 focus:ring-neutral-500/30 shadow-sm',
+    dark: 'bg-white text-neutral-900 border-transparent hover:bg-neutral-100 focus:ring-white/30 shadow-sm'
   },
   
-  // Secondary styles
+  // Secondary - subtle, supportive
   secondary: {
-    light: 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 hover:text-gray-900 focus:ring-gray-300/50',
-    dark: 'bg-white/[0.05] text-gray-300 border border-white/[0.08] hover:bg-white/[0.08] hover:text-white focus:ring-white/20'
+    light: 'bg-neutral-100 text-neutral-700 border border-neutral-200 hover:bg-neutral-200 hover:text-neutral-900 focus:ring-neutral-300/50',
+    dark: 'bg-neutral-800 text-neutral-300 border border-neutral-700 hover:bg-neutral-700 hover:text-white focus:ring-neutral-600/50'
   },
   outline: {
-    light: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:ring-gray-300/50 shadow-sm',
-    dark: 'bg-white/[0.05] text-gray-300 border border-white/[0.08] hover:bg-white/[0.08] hover:text-white focus:ring-white/20'
+    light: 'bg-transparent text-neutral-700 border border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 focus:ring-neutral-300/50',
+    dark: 'bg-transparent text-neutral-300 border border-neutral-700 hover:bg-neutral-800 hover:text-white focus:ring-neutral-600/50'
   },
   
-  // Ghost styles
+  // Ghost - minimal, unobtrusive
   ghost: {
-    light: 'bg-transparent text-gray-600 border-transparent hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-300/50',
-    dark: 'bg-transparent text-gray-400 border-transparent hover:bg-white/[0.05] hover:text-white focus:ring-white/10'
+    light: 'bg-transparent text-neutral-600 border-transparent hover:bg-neutral-100 hover:text-neutral-900 focus:ring-neutral-300/50',
+    dark: 'bg-transparent text-neutral-400 border-transparent hover:bg-neutral-800 hover:text-white focus:ring-neutral-600/50'
   },
   
-  // Status styles
+  // Status styles - only when needed
   danger: {
-    light: 'bg-red-600 text-white border-transparent hover:bg-red-700 focus:ring-red-500/50 shadow-lg shadow-red-600/20',
-    dark: 'bg-red-600 text-white border-transparent hover:bg-red-700 focus:ring-red-500/50 shadow-lg shadow-red-600/20'
+    light: 'bg-red-600 text-white border-transparent hover:bg-red-700 focus:ring-red-500/30 shadow-sm',
+    dark: 'bg-red-600 text-white border-transparent hover:bg-red-700 focus:ring-red-500/30 shadow-sm'
   },
   success: {
-    light: 'bg-green-600 text-white border-transparent hover:bg-green-700 focus:ring-green-500/50 shadow-lg shadow-green-600/20',
-    dark: 'bg-green-600 text-white border-transparent hover:bg-green-700 focus:ring-green-500/50 shadow-lg shadow-green-600/20'
+    light: 'bg-green-600 text-white border-transparent hover:bg-green-700 focus:ring-green-500/30 shadow-sm',
+    dark: 'bg-green-600 text-white border-transparent hover:bg-green-700 focus:ring-green-500/30 shadow-sm'
   },
 };
 
 const sizeVariants = {
-  xs: 'px-2.5 py-1.5 text-xs font-medium',
-  sm: 'px-3 py-2 text-sm font-medium',
-  default: 'px-4 py-2.5 text-sm font-medium',
-  md: 'px-4 py-2.5 text-sm font-medium',
-  lg: 'px-6 py-3 text-base font-medium',
-  xl: 'px-8 py-4 text-lg font-medium',
+  xs: 'px-2 py-1 text-xs font-medium',
+  sm: 'px-3 py-1.5 text-sm font-medium',
+  default: 'px-4 py-2 text-sm font-medium',
+  md: 'px-4 py-2 text-sm font-medium',
+  lg: 'px-5 py-2.5 text-sm font-medium',
+  xl: 'px-6 py-3 text-base font-medium',
 };
 
 const Button = forwardRef(({ 

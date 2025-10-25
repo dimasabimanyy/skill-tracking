@@ -16,24 +16,28 @@ body {
   overflow-x: hidden;
 }
 
-/* Light theme (default) */
+/* Light theme (default) - Vercel-inspired neutrals */
 html.light,
 html.light body {
-  background-color: #ffffff;
-  color: #1a1a1a;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: #fafafa;
+  color: #171717;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Dark theme */
+/* Dark theme - Deep, sophisticated blacks */
 html.dark,
 html.dark body {
   background-color: #0a0a0a;
-  color: #ffffff;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  color: #ededed;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom scrollbar - Light theme */
@@ -118,4 +122,65 @@ body {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Vercel-inspired component patterns */
+.surface-base {
+  background: white;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+}
+
+.dark .surface-base {
+  background: #111111;
+  border: 1px solid #262626;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+}
+
+.surface-elevated {
+  background: white;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+
+.dark .surface-elevated {
+  background: #151515;
+  border: 1px solid #2a2a2a;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.6), 0 2px 4px -2px rgb(0 0 0 / 0.6);
+}
+
+/* Subtle hover elevation */
+.hover-lift {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 12px -4px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 8px 12px -4px rgb(0 0 0 / 0.8), 0 4px 6px -2px rgb(0 0 0 / 0.8);
+}
+
+/* Typography scale */
+.text-heading {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.text-body {
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-caption {
+  font-size: 0.875rem;
+  color: #737373;
+  font-weight: 400;
+}
+
+.dark .text-caption {
+  color: #a3a3a3;
 }

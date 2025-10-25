@@ -48,45 +48,59 @@ export default function Dashboard() {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.05,
+        delayChildren: 0.02
       }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
+    hidden: { opacity: 0, y: 8 },
+    show: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }
   };
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-6 space-y-6">
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
       >
         {/* Hero Section */}
-        <motion.div variants={item} className="mb-8">
+        <motion.div variants={item} className="mb-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white transition-colors">
+              <h1 className={`text-2xl font-semibold mb-2 transition-colors ${
+                theme === 'light' ? 'text-neutral-900' : 'text-white'
+              }`}>
                 Welcome back{user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ''}
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-400 transition-colors">
+              <p className={`transition-colors ${
+                theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
+              }`}>
                 Track your learning journey and achieve your goals
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <Button 
                 onClick={() => setIsCreateGoalModalOpen(true)}
+                size="sm"
                 className="flex items-center gap-2"
               >
-                <Plus size={16} />
+                <Plus size={14} />
                 New Goal
               </Button>
               <Button 
                 onClick={() => router.push('/goals')}
                 variant="secondary"
+                size="sm"
               >
                 View All Goals
               </Button>
@@ -95,68 +109,112 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Stats Overview */}
-        <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-500/10 rounded-xl">
-                <Target className="text-blue-400" size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Total Goals</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{totalGoals}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="blue" size="xs">{completedGoals} completed</Badge>
+        <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <motion.div
+            whileHover={{ y: -1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-md ${
+                  theme === 'light' ? 'bg-blue-50' : 'bg-blue-500/10'
+                }`}>
+                  <Target className="text-blue-500" size={16} />
+                </div>
+                <div>
+                  <p className={`text-xs font-medium transition-colors ${
+                    theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
+                  }`}>Total Goals</p>
+                  <p className={`text-xl font-semibold transition-colors ${
+                    theme === 'light' ? 'text-neutral-900' : 'text-white'
+                  }`}>{totalGoals}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="blue" size="xs">{completedGoals} completed</Badge>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </motion.div>
 
-          <Card className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-500/10 rounded-xl">
-                <BookOpen className="text-green-400" size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Total Skills</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{totalSkills}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="green" size="xs">{completedSkills} done</Badge>
+          <motion.div
+            whileHover={{ y: -1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-md ${
+                  theme === 'light' ? 'bg-emerald-50' : 'bg-emerald-500/10'
+                }`}>
+                  <BookOpen className="text-emerald-500" size={16} />
+                </div>
+                <div>
+                  <p className={`text-xs font-medium transition-colors ${
+                    theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
+                  }`}>Total Skills</p>
+                  <p className={`text-xl font-semibold transition-colors ${
+                    theme === 'light' ? 'text-neutral-900' : 'text-white'
+                  }`}>{totalSkills}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="green" size="xs">{completedSkills} done</Badge>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </motion.div>
 
-          <Card className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-amber-500/10 rounded-xl">
-                <Clock className="text-amber-400" size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">In Progress</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{inProgressSkills}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="yellow" size="xs">Active learning</Badge>
+          <motion.div
+            whileHover={{ y: -1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-md ${
+                  theme === 'light' ? 'bg-amber-50' : 'bg-amber-500/10'
+                }`}>
+                  <Clock className="text-amber-500" size={16} />
+                </div>
+                <div>
+                  <p className={`text-xs font-medium transition-colors ${
+                    theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
+                  }`}>In Progress</p>
+                  <p className={`text-xl font-semibold transition-colors ${
+                    theme === 'light' ? 'text-neutral-900' : 'text-white'
+                  }`}>{inProgressSkills}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="yellow" size="xs">Active learning</Badge>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </motion.div>
 
-          <Card className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-purple-500/10 rounded-xl">
-                <TrendingUp className="text-purple-400" size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Completion Rate</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">
-                  {totalSkills > 0 ? Math.round((completedSkills / totalSkills) * 100) : 0}%
-                </p>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="blue" size="xs">Overall progress</Badge>
+          <motion.div
+            whileHover={{ y: -1 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-md ${
+                  theme === 'light' ? 'bg-purple-50' : 'bg-purple-500/10'
+                }`}>
+                  <TrendingUp className="text-purple-500" size={16} />
+                </div>
+                <div>
+                  <p className={`text-xs font-medium transition-colors ${
+                    theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
+                  }`}>Completion Rate</p>
+                  <p className={`text-xl font-semibold transition-colors ${
+                    theme === 'light' ? 'text-neutral-900' : 'text-white'
+                  }`}>
+                    {totalSkills > 0 ? Math.round((completedSkills / totalSkills) * 100) : 0}%
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="blue" size="xs">Overall progress</Badge>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </motion.div>
         </motion.div>
 
         {/* Active Goals */}
