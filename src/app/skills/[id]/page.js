@@ -2,9 +2,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 // import { motion } from 'framer-motion';
-import { Calendar, Clock, Edit3, Save, X } from 'lucide-react';
+import { Calendar, Clock, Edit3, Save, X, Plus } from 'lucide-react';
 import { useSkills } from '@/hooks/useSkills';
 import { useTopics } from '@/hooks/useTopics';
+import { useSkillContent } from '@/hooks/useSkillContent';
 import { useTheme } from '@/hooks/useTheme';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
@@ -13,6 +14,8 @@ import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import ProgressBar from '@/components/ui/ProgressBar';
 import TopicsList from '@/components/TopicsList';
+import SkillContentList from '@/components/SkillContentList';
+import CreateContentModal from '@/components/CreateContentModal';
 import { getStatusColor, getStatusLabel, formatDate } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -23,9 +26,11 @@ export default function SkillDetailPage() {
   const { theme } = useTheme();
   const [skill, setSkill] = useState(null);
   const { topics, loading: topicsLoading, createTopic, updateTopic, deleteTopic } = useTopics(params.id);
+  const { content, loading: contentLoading, createContent, updateContent, deleteContent } = useSkillContent(params.id);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [isSaving, setIsSaving] = useState(false);
+  const [isCreateContentModalOpen, setIsCreateContentModalOpen] = useState(false);
 
   useEffect(() => {
     if (skills.length > 0) {
@@ -68,7 +73,24 @@ export default function SkillDetailPage() {
     setIsEditing(false);
   };
 
-  if (loading) {
+  const handleCreateContent = async (contentData) => {
+    try {
+      if (contentData.type === 'topic') {
+        // Create as a topic
+        await createTopic({
+          title: contentData.title,
+          description: contentData.content
+        });
+      } else {
+        // Create as content block
+        await createContent(contentData);
+      }
+    } catch (error) {
+      console.error('Error creating content:', error);
+    }
+  };
+
+  if (loading || contentLoading) {
     return (
       <div className="space-y-8">
         <div className="animate-pulse">
@@ -167,164 +189,202 @@ export default function SkillDetailPage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <Card>
-        {/* Title */}
-        <div className="mb-6">
+      {/* Documentation-style Content */}
+      <div className="max-w-none">
+        {/* Header */}
+        <header className="pb-8 mb-8 border-b border-neutral-200 dark:border-neutral-800">
           {isEditing ? (
-            <Input
-              value={editForm.title}
-              onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-              className="text-2xl font-semibold"
-              placeholder="Skill title"
-            />
+            <div className="space-y-4">
+              <Input
+                value={editForm.title}
+                onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                className="text-3xl font-bold"
+                placeholder="Skill title"
+              />
+              <select
+                value={editForm.status}
+                onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value }))}
+                className={`rounded-lg border px-3 py-2 text-sm ${
+                  theme === 'light'
+                    ? 'bg-white border-neutral-300 text-neutral-900'
+                    : 'bg-neutral-800 border-neutral-600 text-white'
+                }`}
+              >
+                <option value="not_started">Not Started</option>
+                <option value="in_progress">In Progress</option>
+                <option value="done">Completed</option>
+              </select>
+            </div>
           ) : (
-            <h1 className={`text-2xl font-semibold ${
-              theme === 'light' ? 'text-neutral-900' : 'text-white'
-            }`}>
-              {skill.title}
-            </h1>
-          )}
-        </div>
-
-        {/* Status selector when editing */}
-        {isEditing && (
-          <div className="mb-6">
-            <label className={`block text-sm font-medium mb-2 ${
-              theme === 'light' ? 'text-neutral-700' : 'text-neutral-300'
-            }`}>
-              Status
-            </label>
-            <select
-              value={editForm.status}
-              onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value }))}
-              className={`w-full rounded-lg border px-3 py-2 text-sm ${
-                theme === 'light'
-                  ? 'bg-white border-neutral-300 text-neutral-900'
-                  : 'bg-neutral-800 border-neutral-600 text-white'
-              }`}
-            >
-              <option value="not_started">Not Started</option>
-              <option value="in_progress">In Progress</option>
-              <option value="done">Completed</option>
-            </select>
-          </div>
-        )}
-
-        {/* Description */}
-        <div className="mb-6">
-          <h3 className={`text-lg font-semibold mb-3 ${
-            theme === 'light' ? 'text-neutral-900' : 'text-white'
-          }`}>
-            Description
-          </h3>
-          {isEditing ? (
-            <Textarea
-              value={editForm.description}
-              onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Add a description for this skill..."
-              rows={3}
-            />
-          ) : (
-            <p className={`${
-              theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
-            }`}>
-              {skill.description || 'No description yet. Click Edit to add one.'}
-            </p>
-          )}
-        </div>
-
-        {/* Metadata */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
-          {skill.target_date && (
             <div>
-              <div className={`mb-1 ${
-                theme === 'light' ? 'text-neutral-500' : 'text-neutral-500'
+              <h1 className={`text-3xl font-bold mb-4 ${
+                theme === 'light' ? 'text-neutral-900' : 'text-white'
               }`}>
-                Target Date
-              </div>
-              {isEditing ? (
-                <Input
-                  type="date"
-                  value={editForm.target_date}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, target_date: e.target.value }))}
-                  className="text-sm"
-                />
-              ) : (
-                <div className={`flex items-center gap-2 ${
-                  isOverdue 
-                    ? 'text-red-500' 
-                    : theme === 'light' 
-                    ? 'text-neutral-700' 
-                    : 'text-neutral-300'
+                {skill.title}
+              </h1>
+              {skill.description && (
+                <p className={`text-lg leading-relaxed ${
+                  theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
                 }`}>
-                  <Calendar size={14} />
-                  {formatDate(skill.target_date)}
-                </div>
-              )}
-            </div>
-          )}
-          <div>
-            <div className={`mb-1 ${
-              theme === 'light' ? 'text-neutral-500' : 'text-neutral-500'
-            }`}>
-              Last Updated
-            </div>
-            <div className={`flex items-center gap-2 ${
-              theme === 'light' ? 'text-neutral-700' : 'text-neutral-300'
-            }`}>
-              <Clock size={14} />
-              {formatDistanceToNow(new Date(skill.last_reviewed_at), { addSuffix: true })}
-            </div>
-          </div>
-        </div>
-
-        {/* Notes */}
-        <div className="mb-8">
-          <h3 className={`text-lg font-semibold mb-3 ${
-            theme === 'light' ? 'text-neutral-900' : 'text-white'
-          }`}>
-            Notes
-          </h3>
-          {isEditing ? (
-            <Textarea
-              value={editForm.notes}
-              onChange={(e) => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
-              placeholder="Add your learning notes, insights, or progress updates..."
-              rows={8}
-            />
-          ) : (
-            <div className={`rounded-lg p-4 min-h-[200px] ${
-              theme === 'light' ? 'bg-neutral-50' : 'bg-neutral-800/30'
-            }`}>
-              {skill.notes ? (
-                <pre className={`whitespace-pre-wrap font-sans ${
-                  theme === 'light' ? 'text-neutral-700' : 'text-neutral-300'
-                }`}>
-                  {skill.notes}
-                </pre>
-              ) : (
-                <p className={`italic ${
-                  theme === 'light' ? 'text-neutral-500' : 'text-neutral-500'
-                }`}>
-                  No notes yet. Click Edit to add your learning insights and progress updates.
+                  {skill.description}
                 </p>
               )}
             </div>
           )}
-        </div>
-      </Card>
+        </header>
 
-      {/* Topics Section */}
-      <Card>
-        <TopicsList
-          topics={topics}
-          loading={topicsLoading}
-          onCreateTopic={createTopic}
-          onUpdateTopic={updateTopic}
-          onDeleteTopic={deleteTopic}
-        />
-      </Card>
+        {/* Description Section (when editing) */}
+        {isEditing && (
+          <div className="mb-8">
+            <label className={`block text-sm font-medium mb-3 ${
+              theme === 'light' ? 'text-neutral-700' : 'text-neutral-300'
+            }`}>
+              Description
+            </label>
+            <Textarea
+              value={editForm.description}
+              onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="Describe what this skill is about and what you'll learn..."
+              rows={4}
+            />
+          </div>
+        )}
+
+        {/* Learning Notes Section */}
+        <div className="mb-12">
+          <h2 className={`text-xl font-semibold mb-6 ${
+            theme === 'light' ? 'text-neutral-900' : 'text-white'
+          }`}>
+            Learning Notes
+          </h2>
+          
+          {isEditing ? (
+            <Textarea
+              value={editForm.notes}
+              onChange={(e) => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
+              placeholder="Document your learning journey, key insights, resources, and progress..."
+              rows={12}
+              className="font-mono text-sm"
+            />
+          ) : (
+            <div className={`prose prose-neutral max-w-none ${
+              theme === 'dark' ? 'prose-invert' : ''
+            }`}>
+              {skill.notes ? (
+                <div className={`whitespace-pre-wrap leading-relaxed ${
+                  theme === 'light' ? 'text-neutral-700' : 'text-neutral-300'
+                }`}>
+                  {skill.notes}
+                </div>
+              ) : (
+                <div className={`text-center py-16 ${
+                  theme === 'light' ? 'text-neutral-500' : 'text-neutral-500'
+                }`}>
+                  <p className="italic">
+                    No learning notes yet. Click Edit to document your journey.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Content Section */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className={`text-xl font-semibold ${
+              theme === 'light' ? 'text-neutral-900' : 'text-white'
+            }`}>
+              Documentation
+            </h2>
+            <Button 
+              onClick={() => setIsCreateContentModalOpen(true)} 
+              variant="ghost" 
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Plus size={14} />
+              Add Content
+            </Button>
+          </div>
+          
+          {/* Content Blocks */}
+          {content.length > 0 && (
+            <div className="mb-8">
+              <SkillContentList
+                content={content}
+                loading={contentLoading}
+                onCreateContent={createContent}
+                onUpdateContent={updateContent}
+                onDeleteContent={deleteContent}
+              />
+            </div>
+          )}
+          
+          {/* Topics (Legacy) */}
+          {topics.length > 0 && (
+            <div>
+              <h3 className={`text-lg font-medium mb-4 ${
+                theme === 'light' ? 'text-neutral-800' : 'text-neutral-200'
+              }`}>
+                Topics
+              </h3>
+              <TopicsList
+                topics={topics}
+                loading={topicsLoading}
+                onCreateTopic={createTopic}
+                onUpdateTopic={updateTopic}
+                onDeleteTopic={deleteTopic}
+              />
+            </div>
+          )}
+          
+          {/* Empty State */}
+          {content.length === 0 && topics.length === 0 && !contentLoading && !topicsLoading && (
+            <div className={`text-center py-16 ${
+              theme === 'light' ? 'text-neutral-500' : 'text-neutral-500'
+            }`}>
+              <p className="italic">
+                No documentation yet. Click "Add Content" to start documenting your learning journey.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Metadata Footer */}
+        {!isEditing && (
+          <footer className={`pt-8 mt-12 border-t text-sm ${
+            theme === 'light' 
+              ? 'border-neutral-200 text-neutral-500' 
+              : 'border-neutral-800 text-neutral-500'
+          }`}>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Clock size={14} />
+                <span>
+                  Last updated {formatDistanceToNow(new Date(skill.last_reviewed_at), { addSuffix: true })}
+                </span>
+              </div>
+              {skill.target_date && (
+                <div className={`flex items-center gap-2 ${
+                  isOverdue ? 'text-red-500' : ''
+                }`}>
+                  <Calendar size={14} />
+                  <span>Target: {formatDate(skill.target_date)}</span>
+                </div>
+              )}
+            </div>
+          </footer>
+        )}
+      </div>
+
+      {/* Create Content Modal */}
+      <CreateContentModal
+        isOpen={isCreateContentModalOpen}
+        onClose={() => setIsCreateContentModalOpen(false)}
+        onContentCreated={handleCreateContent}
+        skillId={params.id}
+      />
     </div>
   );
 }
