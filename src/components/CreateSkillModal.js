@@ -1,165 +1,196 @@
 'use client';
 import { useState } from 'react';
-import Modal from './ui/Modal';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, BookOpen } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import Button from './ui/Button';
-import { useGoals } from '@/hooks/useGoals';
+import Input from './ui/Input';
+import Textarea from './ui/Textarea';
 
-export default function CreateSkillModal({ isOpen, onClose, onSkillCreated }) {
-  const { goals } = useGoals();
+export default function CreateSkillModal({ isOpen, onClose, onSkillCreated, goalId }) {
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    goal_id: '',
-    target_date: '',
     estimated_duration_days: ''
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (!formData.title.trim()) return;
 
+    setIsLoading(true);
     try {
-      const skillData = {
+      await onSkillCreated({
         ...formData,
-        goal_id: formData.goal_id || null,
-        target_date: formData.target_date || null,
+        goal_id: goalId,
+        order_in_roadmap: 999, // Will be set properly by parent
         estimated_duration_days: formData.estimated_duration_days ? parseInt(formData.estimated_duration_days) : null
-      };
-
-      await onSkillCreated(skillData);
+      });
       
-      // Reset form
+      // Reset form and close modal
       setFormData({
         title: '',
         description: '',
-        goal_id: '',
-        target_date: '',
         estimated_duration_days: ''
       });
-      
       onClose();
     } catch (error) {
       console.error('Error creating skill:', error);
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleClose = () => {
+    if (isLoading) return;
+    setFormData({
+      title: '',
+      description: '',
+      estimated_duration_days: ''
+    });
+    onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Create New Skill" size="md">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Title */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
-            Skill Title *
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            placeholder="e.g., Advanced React Patterns"
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          {/* Backdrop */}
+          <motion.div
+            className={`fixed inset-0 transition-colors ${
+              theme === 'light' ? 'bg-black/20' : 'bg-black/40'
+            }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleClose}
           />
-        </div>
+          
+          {/* Modal */}
+          <div className="flex min-h-full items-center justify-center p-4">
+            <motion.div
+              className={`relative w-full max-w-md rounded-xl border shadow-xl ${
+                theme === 'light'
+                  ? 'bg-white border-neutral-200'
+                  : 'bg-neutral-900 border-neutral-700'
+              }`}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    theme === 'light' ? 'bg-indigo-50' : 'bg-indigo-900/30'
+                  }`}>
+                    <BookOpen className="text-indigo-500" size={20} />
+                  </div>
+                  <div>
+                    <h2 className={`text-lg font-semibold ${
+                      theme === 'light' ? 'text-neutral-900' : 'text-white'
+                    }`}>
+                      Add New Skill
+                    </h2>
+                    <p className={`text-sm ${
+                      theme === 'light' ? 'text-neutral-600' : 'text-neutral-400'
+                    }`}>
+                      Add a skill to your learning path
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleClose}
+                  disabled={isLoading}
+                  className={`p-2 rounded-full transition-colors ${
+                    theme === 'light'
+                      ? 'hover:bg-neutral-100 text-neutral-500 hover:text-neutral-700'
+                      : 'hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  <X size={16} />
+                </button>
+              </div>
 
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={3}
-            placeholder="Describe what you'll learn and practice..."
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          />
-        </div>
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="p-6 pt-0 space-y-4">
+                {/* Title */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-neutral-700' : 'text-neutral-300'
+                  }`}>
+                    Skill Name *
+                  </label>
+                  <Input
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="e.g., React Hooks, Database Design, Machine Learning"
+                    disabled={isLoading}
+                    autoFocus
+                  />
+                </div>
 
-        {/* Goal Association */}
-        <div>
-          <label htmlFor="goal_id" className="block text-sm font-medium text-gray-300 mb-1">
-            Associate with Goal (Optional)
-          </label>
-          <select
-            id="goal_id"
-            name="goal_id"
-            value={formData.goal_id}
-            onChange={handleChange}
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">No goal selected</option>
-            {goals.map(goal => (
-              <option key={goal.id} value={goal.id}>
-                {goal.title}
-              </option>
-            ))}
-          </select>
-        </div>
+                {/* Description */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-neutral-700' : 'text-neutral-300'
+                  }`}>
+                    Description
+                  </label>
+                  <Textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="What will you learn and how will it help you achieve your goal?"
+                    rows={3}
+                    disabled={isLoading}
+                  />
+                </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          {/* Target Date */}
-          <div>
-            <label htmlFor="target_date" className="block text-sm font-medium text-gray-300 mb-1">
-              Target Date
-            </label>
-            <input
-              type="date"
-              id="target_date"
-              name="target_date"
-              value={formData.target_date}
-              onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+                {/* Duration */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-neutral-700' : 'text-neutral-300'
+                  }`}>
+                    Estimated Duration (days)
+                  </label>
+                  <Input
+                    type="number"
+                    value={formData.estimated_duration_days}
+                    onChange={(e) => setFormData(prev => ({ ...prev, estimated_duration_days: e.target.value }))}
+                    placeholder="30"
+                    min="1"
+                    disabled={isLoading}
+                  />
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={handleClose}
+                    disabled={isLoading}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={!formData.title.trim() || isLoading}
+                    loading={isLoading}
+                    className="flex-1"
+                  >
+                    Add Skill
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
           </div>
-
-          {/* Duration */}
-          <div>
-            <label htmlFor="estimated_duration_days" className="block text-sm font-medium text-gray-300 mb-1">
-              Duration (days)
-            </label>
-            <input
-              type="number"
-              id="estimated_duration_days"
-              name="estimated_duration_days"
-              value={formData.estimated_duration_days}
-              onChange={handleChange}
-              min="1"
-              placeholder="14"
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
         </div>
-
-        {/* Actions */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-700">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onClose}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting || !formData.title.trim()}
-          >
-            {isSubmitting ? 'Creating...' : 'Create Skill'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
+      )}
+    </AnimatePresence>
   );
 }

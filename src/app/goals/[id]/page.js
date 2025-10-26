@@ -17,8 +17,8 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import ProgressBar from "@/components/ui/ProgressBar";
+import CreateSkillModal from "@/components/CreateSkillModal";
 import {
-  getProgressValue,
   getStatusColor,
   getStatusLabel,
   formatDate,
@@ -33,6 +33,7 @@ export default function GoalRoadmapPage() {
 
   const [goal, setGoal] = useState(null);
   const [goalSkills, setGoalSkills] = useState([]);
+  const [isCreateSkillModalOpen, setIsCreateSkillModalOpen] = useState(false);
 
   useEffect(() => {
     if (goals.length > 0) {
@@ -51,13 +52,16 @@ export default function GoalRoadmapPage() {
     }
   }, [skills, goal]);
 
-  const handleAddSkill = async () => {
+  const handleAddSkill = () => {
+    setIsCreateSkillModalOpen(true);
+  };
+
+  const handleCreateSkill = async (skillData) => {
     if (!goal) return;
 
     const newSkill = await createSkill({
+      ...skillData,
       goal_id: goal.id,
-      title: "New Skill",
-      description: "Click to edit and add details",
       order_in_roadmap: goalSkills.length,
     });
 
@@ -314,27 +318,23 @@ export default function GoalRoadmapPage() {
             </Button>
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {goalSkills.map((skill, index) => (
               <div 
                 key={skill.id} 
-                className={`group relative rounded-lg border transition-all duration-200 hover:shadow-md cursor-pointer ${
-                  theme === "light"
-                    ? "bg-white border-neutral-200 hover:border-neutral-300"
-                    : "bg-neutral-900/50 border-neutral-700 hover:border-neutral-600"
-                }`}
+                className="group relative cursor-pointer"
                 onClick={() => router.push(`/skills/${skill.id}`)}
               >
                 {/* Connection line */}
                 {index < goalSkills.length - 1 && (
-                  <div className={`absolute left-6 top-12 w-px h-6 ${
+                  <div className={`absolute left-3 top-8 w-px h-8 ${
                     theme === "light" ? "bg-neutral-200" : "bg-neutral-700"
                   }`}></div>
                 )}
 
-                <div className="flex items-center gap-4 p-4">
+                <div className="flex items-start gap-4 py-2">
                   {/* Status indicator */}
-                  <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                  <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors mt-0.5 ${
                     skill.status === "done"
                       ? "bg-emerald-100 text-emerald-600"
                       : skill.status === "in_progress"
@@ -354,8 +354,8 @@ export default function GoalRoadmapPage() {
 
                   {/* Skill content */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className={`font-medium transition-colors ${
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className={`font-medium transition-colors group-hover:text-indigo-600 ${
                         theme === "light" ? "text-neutral-900" : "text-white"
                       }`}>
                         {skill.title}
@@ -369,19 +369,12 @@ export default function GoalRoadmapPage() {
                     </div>
                     
                     {skill.description && (
-                      <p className={`text-sm line-clamp-1 ${
+                      <p className={`text-sm mt-1 line-clamp-2 ${
                         theme === "light" ? "text-neutral-600" : "text-neutral-400"
                       }`}>
                         {skill.description}
                       </p>
                     )}
-                  </div>
-
-                  {/* Arrow indicator */}
-                  <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${
-                    theme === "light" ? "text-neutral-400" : "text-neutral-600"
-                  }`}>
-                    <ChevronRight size={16} />
                   </div>
                 </div>
               </div>
@@ -389,6 +382,14 @@ export default function GoalRoadmapPage() {
           </div>
         )}
       </div>
+
+      {/* Create Skill Modal */}
+      <CreateSkillModal
+        isOpen={isCreateSkillModalOpen}
+        onClose={() => setIsCreateSkillModalOpen(false)}
+        onSkillCreated={handleCreateSkill}
+        goalId={goal?.id}
+      />
     </div>
   );
 }
