@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Edit3,
   Flag,
+  ChevronRight,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -289,112 +290,120 @@ export default function GoalRoadmapPage() {
           )}
       </Card>
 
-      {/* Roadmap Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className={`text-xl font-bold ${theme === "light" ? "text-gray-900" : "text-white"}`}>Learning Roadmap</h2>
-          <p className={`${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Skills needed to achieve your goal</p>
-        </div>
-        <Button onClick={handleAddSkill} className="flex items-center gap-2">
-          <Plus size={16} />
-          Add Skill
-        </Button>
-      </div>
-
-      {/* Linear Roadmap */}
-      {goalSkills.length === 0 ? (
-        <Card className="text-center py-12">
-          <div className={`mb-4 ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
-            <Target className="mx-auto h-12 w-12 mb-4" />
-          </div>
-          <h3 className={`text-lg font-medium mb-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>
-            No skills in roadmap yet
-          </h3>
-          <p className={`mb-6 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
-            Start building your learning path by adding the skills you need to
-            achieve this goal.
-          </p>
-          <Button
-            onClick={handleAddSkill}
-            className="flex items-center gap-2 mx-auto"
+      {/* Learning Path */}
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <h2 className={`text-xl font-semibold ${theme === "light" ? "text-neutral-900" : "text-white"}`}>
+            Learning Path
+          </h2>
+          <Button 
+            onClick={handleAddSkill} 
+            variant="ghost" 
+            size="sm"
+            className="flex items-center gap-2"
           >
-            <Plus size={16} />
-            Add Your First Skill
+            <Plus size={14} />
+            Add Skill
           </Button>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {goalSkills.map((skill, index) => (
-            <div key={skill.id} className="relative">
-              {/* Connection Line */}
-              {index < goalSkills.length - 1 && (
-                <div className={`absolute left-8 top-16 w-0.5 h-8 ${theme === "light" ? "bg-gray-300" : "bg-gray-700"}`}></div>
-              )}
+        </div>
 
-              <div
-                className="flex gap-4 cursor-pointer group"
+        {goalSkills.length === 0 ? (
+          <Card className="text-center py-16 px-8">
+            <div className={`w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center ${
+              theme === "light" ? "bg-indigo-50" : "bg-indigo-900/30"
+            }`}>
+              <Target className="text-indigo-500" size={24} />
+            </div>
+            <h3 className={`text-lg font-semibold mb-3 ${theme === "light" ? "text-neutral-900" : "text-white"}`}>
+              Build your learning path
+            </h3>
+            <p className={`mb-8 max-w-md mx-auto ${theme === "light" ? "text-neutral-600" : "text-neutral-400"}`}>
+              Break down your goal into skills you need to learn. Each skill becomes a step on your journey.
+            </p>
+            <Button
+              onClick={handleAddSkill}
+              className="flex items-center gap-2 mx-auto"
+            >
+              <Plus size={16} />
+              Add Your First Skill
+            </Button>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {goalSkills.map((skill, index) => (
+              <div 
+                key={skill.id} 
+                className={`group relative rounded-lg border transition-all duration-200 hover:shadow-md cursor-pointer ${
+                  theme === "light"
+                    ? "bg-white border-neutral-200 hover:border-neutral-300"
+                    : "bg-neutral-900/50 border-neutral-700 hover:border-neutral-600"
+                }`}
                 onClick={() => router.push(`/skills/${skill.id}`)}
               >
-                {/* Step Number */}
-                <div className={`flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium group-hover:border-blue-500 transition-colors ${
-                  theme === "light" 
-                    ? "bg-gray-100 border-gray-300" 
-                    : "bg-gray-800 border-gray-600"
-                }`}>
-                  {skill.status === "done" ? (
-                    <CheckCircle2 className="text-green-400" size={16} />
-                  ) : (
-                    <span className={theme === "light" ? "text-gray-600" : "text-gray-300"}>{index + 1}</span>
-                  )}
-                </div>
+                {/* Connection line */}
+                {index < goalSkills.length - 1 && (
+                  <div className={`absolute left-6 top-12 w-px h-6 ${
+                    theme === "light" ? "bg-neutral-200" : "bg-neutral-700"
+                  }`}></div>
+                )}
 
-                {/* Skill Card */}
-                <Card variant="interactive" className="flex-1">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className={`font-semibold group-hover:text-blue-400 transition-colors ${
-                      theme === "light" ? "text-gray-900" : "text-white"
-                    }`}>
-                      {skill.title}
-                    </h3>
-                    <Badge variant={getStatusColor(skill.status)}>
-                      {getStatusLabel(skill.status)}
-                    </Badge>
+                <div className="flex items-center gap-4 p-4">
+                  {/* Status indicator */}
+                  <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                    skill.status === "done"
+                      ? "bg-emerald-100 text-emerald-600"
+                      : skill.status === "in_progress"
+                      ? (theme === "light" ? "bg-blue-100 text-blue-600" : "bg-blue-900/50 text-blue-400")
+                      : (theme === "light" ? "bg-neutral-100 text-neutral-400" : "bg-neutral-800 text-neutral-500")
+                  }`}>
+                    {skill.status === "done" ? (
+                      <CheckCircle2 size={14} />
+                    ) : (
+                      <div className={`w-2 h-2 rounded-full ${
+                        skill.status === "in_progress" 
+                          ? "bg-current" 
+                          : "border border-current"
+                      }`}></div>
+                    )}
                   </div>
 
-                  {skill.description && (
-                    <p className={`text-sm mb-3 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
-                      {skill.description}
-                    </p>
-                  )}
-
-                  <ProgressBar
-                    value={getProgressValue(skill.status)}
-                    className="mb-3"
-                  />
-
-                  <div className={`flex items-center justify-between text-xs ${theme === "light" ? "text-gray-500" : "text-gray-500"}`}>
-                    <div className="flex items-center gap-4">
-                      {skill.target_date && (
-                        <div className="flex items-center gap-1">
-                          <Calendar size={12} />
-                          <span>{formatDate(skill.target_date)}</span>
-                        </div>
-                      )}
-                      {skill.estimated_duration_days && (
-                        <div className="flex items-center gap-1">
-                          <Clock size={12} />
-                          <span>{skill.estimated_duration_days} days</span>
-                        </div>
-                      )}
+                  {/* Skill content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className={`font-medium transition-colors ${
+                        theme === "light" ? "text-neutral-900" : "text-white"
+                      }`}>
+                        {skill.title}
+                      </h3>
+                      <Badge 
+                        variant={getStatusColor(skill.status)} 
+                        size="xs"
+                      >
+                        {getStatusLabel(skill.status)}
+                      </Badge>
                     </div>
-                    <span className={theme === "light" ? "text-gray-500" : "text-gray-500"}>Click to edit</span>
+                    
+                    {skill.description && (
+                      <p className={`text-sm line-clamp-1 ${
+                        theme === "light" ? "text-neutral-600" : "text-neutral-400"
+                      }`}>
+                        {skill.description}
+                      </p>
+                    )}
                   </div>
-                </Card>
+
+                  {/* Arrow indicator */}
+                  <div className={`opacity-0 group-hover:opacity-100 transition-opacity ${
+                    theme === "light" ? "text-neutral-400" : "text-neutral-600"
+                  }`}>
+                    <ChevronRight size={16} />
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
