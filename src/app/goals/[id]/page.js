@@ -11,7 +11,6 @@ import {
   Clock,
   CheckCircle2,
   Flag,
-  ChevronRight,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -318,7 +317,7 @@ export default function GoalRoadmapPage() {
             </Button>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-0">
             {goalSkills.map((skill, index) => (
               <div 
                 key={skill.id} 
@@ -327,19 +326,19 @@ export default function GoalRoadmapPage() {
               >
                 {/* Connection line */}
                 {index < goalSkills.length - 1 && (
-                  <div className={`absolute left-3 top-8 w-px h-8 ${
+                  <div className={`absolute left-3 top-6 w-px h-12 ${
                     theme === "light" ? "bg-neutral-200" : "bg-neutral-700"
                   }`}></div>
                 )}
 
-                <div className="flex items-start gap-4 py-2">
+                <div className="flex items-start gap-4">
                   {/* Status indicator */}
-                  <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors mt-0.5 ${
+                  <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors z-10 relative ${
                     skill.status === "done"
-                      ? "bg-emerald-100 text-emerald-600"
+                      ? (theme === "light" ? "bg-emerald-100 text-emerald-600 border-2 border-emerald-200" : "bg-emerald-900/50 text-emerald-400 border-2 border-emerald-700")
                       : skill.status === "in_progress"
-                      ? (theme === "light" ? "bg-blue-100 text-blue-600" : "bg-blue-900/50 text-blue-400")
-                      : (theme === "light" ? "bg-neutral-100 text-neutral-400" : "bg-neutral-800 text-neutral-500")
+                      ? (theme === "light" ? "bg-blue-100 text-blue-600 border-2 border-blue-200" : "bg-blue-900/50 text-blue-400 border-2 border-blue-700")
+                      : (theme === "light" ? "bg-white text-neutral-400 border-2 border-neutral-200" : "bg-neutral-900 text-neutral-500 border-2 border-neutral-700")
                   }`}>
                     {skill.status === "done" ? (
                       <CheckCircle2 size={14} />
@@ -353,7 +352,7 @@ export default function GoalRoadmapPage() {
                   </div>
 
                   {/* Skill content */}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 py-3">
                     <div className="flex items-center justify-between gap-3">
                       <h3 className={`font-medium transition-colors group-hover:text-indigo-600 ${
                         theme === "light" ? "text-neutral-900" : "text-white"
