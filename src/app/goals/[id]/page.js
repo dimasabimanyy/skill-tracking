@@ -5,13 +5,11 @@ import { useGoals } from "@/hooks/useGoals";
 import { useSkills } from "@/hooks/useSkills";
 import { useTheme } from "@/hooks/useTheme";
 import {
-  ArrowLeft,
   Plus,
   Target,
   Calendar,
   Clock,
   CheckCircle2,
-  Edit3,
   Flag,
   ChevronRight,
 } from "lucide-react";
@@ -93,24 +91,24 @@ export default function GoalRoadmapPage() {
 
   if (goalsLoading || skillsLoading) {
     return (
-      <div className="p-8 space-y-8">
+      <div className="space-y-8">
         <div className="animate-pulse">
           <div
             className={`h-8 rounded w-32 mb-6 ${
-              theme === "light" ? "bg-gray-200" : "bg-gray-700"
+              theme === "light" ? "bg-neutral-200" : "bg-neutral-700"
             }`}
           ></div>
           <div
-            className={`rounded-lg p-6 mb-6 h-48 ${
-              theme === "light" ? "bg-gray-200" : "bg-gray-800"
+            className={`rounded-xl p-6 mb-6 h-48 ${
+              theme === "light" ? "bg-neutral-200" : "bg-neutral-800"
             }`}
           ></div>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className={`rounded-lg p-4 h-24 ${
-                  theme === "light" ? "bg-gray-200" : "bg-gray-800"
+                className={`rounded-xl p-4 h-24 ${
+                  theme === "light" ? "bg-neutral-200" : "bg-neutral-800"
                 }`}
               ></div>
             ))}
@@ -122,26 +120,18 @@ export default function GoalRoadmapPage() {
 
   if (!goal) {
     return (
-      <div className="p-8 space-y-8">
-        <Button
-          onClick={() => router.push("/goals")}
-          variant="ghost"
-          className="mb-6"
-        >
-          <ArrowLeft size={16} className="mr-2" />
-          Back to Goals
-        </Button>
+      <div className="space-y-8">
         <Card className="text-center py-12">
           <h2
             className={`text-xl font-semibold mb-2 ${
-              theme === "light" ? "text-gray-900" : "text-white"
+              theme === "light" ? "text-neutral-900" : "text-white"
             }`}
           >
             Goal not found
           </h2>
           <p
             className={`mb-6 ${
-              theme === "light" ? "text-gray-600" : "text-gray-400"
+              theme === "light" ? "text-neutral-600" : "text-neutral-400"
             }`}
           >
             The goal you're looking for doesn't exist.
@@ -153,39 +143,23 @@ export default function GoalRoadmapPage() {
   }
 
   return (
-    <div className="p-8 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <Button onClick={() => router.push("/goals")} variant="ghost">
-          <ArrowLeft size={16} className="mr-2" />
-          Back to Goals
-        </Button>
-        <Button
-          onClick={() => router.push(`/goals/${goal.id}/edit`)}
-          variant="outline"
-          size="sm"
-        >
-          <Edit3 size={16} className="mr-2" />
-          Edit Goal
-        </Button>
-      </div>
-
+    <div className="space-y-8">
       {/* Goal Header */}
-      <Card className="mb-8">
+      <Card>
         <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {goal.is_achieved ? (
               <CheckCircle2
-                className="text-green-400 flex-shrink-0"
+                className="text-emerald-500 flex-shrink-0"
                 size={24}
               />
             ) : (
-              <Target className="text-blue-400 flex-shrink-0" size={24} />
+              <Target className="text-indigo-500 flex-shrink-0" size={24} />
             )}
             <div>
               <h1
-                className={`text-2xl font-bold ${
-                  theme === "light" ? "text-gray-900" : "text-white"
+                className={`text-2xl font-semibold ${
+                  theme === "light" ? "text-neutral-900" : "text-white"
                 }`}
               >
                 {goal.title}
@@ -193,7 +167,7 @@ export default function GoalRoadmapPage() {
               {goal.description && (
                 <p
                   className={`mt-1 ${
-                    theme === "light" ? "text-gray-600" : "text-gray-400"
+                    theme === "light" ? "text-neutral-600" : "text-neutral-400"
                   }`}
                 >
                   {goal.description}
@@ -210,10 +184,10 @@ export default function GoalRoadmapPage() {
             <div
               className={`flex items-center gap-2 ${
                 isOverdue
-                  ? "text-red-400"
+                  ? "text-red-500"
                   : theme === "light"
-                  ? "text-gray-600"
-                  : "text-gray-400"
+                  ? "text-neutral-600"
+                  : "text-neutral-400"
               }`}
             >
               <Calendar size={16} />
@@ -229,7 +203,7 @@ export default function GoalRoadmapPage() {
           {goal.estimated_duration_weeks && (
             <div
               className={`flex items-center gap-2 ${
-                theme === "light" ? "text-gray-600" : "text-gray-400"
+                theme === "light" ? "text-neutral-600" : "text-neutral-400"
               }`}
             >
               <Clock size={16} />
@@ -239,7 +213,7 @@ export default function GoalRoadmapPage() {
 
           <div
             className={`flex items-center gap-2 ${
-              theme === "light" ? "text-gray-600" : "text-gray-400"
+              theme === "light" ? "text-neutral-600" : "text-neutral-400"
             }`}
           >
             <Target size={16} />
@@ -250,8 +224,8 @@ export default function GoalRoadmapPage() {
         {/* Overall Progress */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className={`font-medium ${theme === "light" ? "text-gray-900" : "text-white"}`}>Overall Progress</span>
-            <span className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
+            <span className={`font-medium ${theme === "light" ? "text-neutral-900" : "text-white"}`}>Overall Progress</span>
+            <span className={`text-sm ${theme === "light" ? "text-neutral-600" : "text-neutral-400"}`}>
               {goalSkills.filter((s) => s.status === "done").length}/
               {goalSkills.length} completed
             </span>
@@ -267,20 +241,31 @@ export default function GoalRoadmapPage() {
         {!goal.is_achieved &&
           getOverallProgress() === 100 &&
           goalSkills.length > 0 && (
-            <Card className="bg-green-900/20 border-green-700 p-4">
+            <Card className={`p-4 ${
+              theme === "light" 
+                ? "bg-emerald-50 border-emerald-200" 
+                : "bg-emerald-900/20 border-emerald-700"
+            }`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-green-300 mb-1">
+                  <h3 className={`font-medium mb-1 ${
+                    theme === "light" ? "text-emerald-700" : "text-emerald-300"
+                  }`}>
                     All skills completed! 🎉
                   </h3>
-                  <p className="text-sm text-green-400">
+                  <p className={`text-sm ${
+                    theme === "light" ? "text-emerald-600" : "text-emerald-400"
+                  }`}>
                     Ready to mark this goal as achieved?
                   </p>
                 </div>
                 <Button
                   onClick={handleMarkGoalAchieved}
-                  variant="default"
-                  className="bg-green-600 hover:bg-green-700"
+                  className={`${
+                    theme === "light" 
+                      ? "bg-emerald-600 hover:bg-emerald-700" 
+                      : "bg-emerald-600 hover:bg-emerald-700"
+                  }`}
                 >
                   <Flag size={16} className="mr-2" />
                   Mark as Achieved
